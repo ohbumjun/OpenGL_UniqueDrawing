@@ -234,6 +234,8 @@ void display()
 	}
 	if (displayMode == displayModes::THREE_D)
 	{
+		glColor3f(robot.robot_color[0],robot.robot_color[1],robot.robot_color[2]);
+
 		// 앞으로 숙이기
 		glRotatef(10, 1, 0, 0); // z축 기준 회전 
 
@@ -345,6 +347,11 @@ void mykey(unsigned char key, int x, int y)
 			Clock2d.clock_smalltick_color = vector3D(0.8, 0.0, 0.0);
 			glutPostRedisplay();
 		}
+		else if (displayMode == displayModes::THREE_D)
+		{
+			robot.robot_color = vector3D(1.0, 0.0, 0.0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'y':
 		if (displayMode == displayModes::SIMPLE_DRAWING &&  
@@ -359,6 +366,11 @@ void mykey(unsigned char key, int x, int y)
 		{
 			Clock2d.clock_bigtick_color = vector3D(1.0, 1.0, 0.0);
 			Clock2d.clock_smalltick_color = vector3D(0.8, 0.8, 0.0);
+			glutPostRedisplay();
+		}
+		else if (displayMode == displayModes::THREE_D)
+		{
+			robot.robot_color = vector3D(1.0, 1.0, 0.0);
 			glutPostRedisplay();
 		}
 		break;
@@ -377,6 +389,11 @@ void mykey(unsigned char key, int x, int y)
 			Clock2d.clock_smalltick_color = vector3D(0.0, 0.0, 0.8);
 			glutPostRedisplay();
 		}
+		else if (displayMode == displayModes::THREE_D)
+		{
+			robot.robot_color = vector3D(0.0, 0.0, 1.0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'g':
 		if (displayMode == displayModes::SIMPLE_DRAWING && 
@@ -391,6 +408,11 @@ void mykey(unsigned char key, int x, int y)
 		{
 			Clock2d.clock_bigtick_color = vector3D(0.0, 1.0, 0.0);
 			Clock2d.clock_smalltick_color = vector3D(0.0, 0.8, 0.0);
+			glutPostRedisplay();
+		}
+		else if (displayMode == displayModes::THREE_D)
+		{
+			robot.robot_color = vector3D(0.0, 1.0, 0.0);
 			glutPostRedisplay();
 		}
 		break;
@@ -409,6 +431,11 @@ void mykey(unsigned char key, int x, int y)
 			Clock2d.clock_smalltick_color = vector3D(0.8, 0.0, 0.0);
 			glutPostRedisplay();
 		}
+		else if (displayMode == displayModes::THREE_D)
+		{
+			robot.robot_color = vector3D(1.0, 0.0, 0.0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'm':
 		if (displayMode == displayModes::SIMPLE_DRAWING && 
@@ -423,6 +450,11 @@ void mykey(unsigned char key, int x, int y)
 		{
 			Clock2d.clock_bigtick_color = vector3D(1.0, 0.0, 1.0);
 			Clock2d.clock_smalltick_color = vector3D(1.0, 0.0, 0.8);
+			glutPostRedisplay();
+		}
+		else if (displayMode == displayModes::THREE_D)
+		{
+			robot.robot_color = vector3D(1.0, 0.0, 1.0);
 			glutPostRedisplay();
 		}
 		break;

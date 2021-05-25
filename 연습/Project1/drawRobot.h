@@ -1,5 +1,6 @@
 #include "cg.h"
 #include "draw.h"
+#include "vec.h"
 #include <cmath>
 #include<iostream>
 
@@ -28,6 +29,7 @@ struct Robot
 	int dir_low = 4;
 
 	bool robot_anim_on = true;
+	vector3D robot_color = vector3D(1, 1, 1);
 };
 
 void drawAxis();

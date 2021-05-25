@@ -20,7 +20,6 @@ void drawAxis()
 {
 	glBegin(GL_LINES);
 	glColor3f(1, 1, 1);
-
 	// matrix 그리기 x,y,z 축 초기화 
 	// glMatrixMode(GL_MODELVIEW); 
 	// glLoadIdentity();
