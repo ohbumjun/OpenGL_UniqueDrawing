@@ -69,11 +69,13 @@ void drawUpperRightArm(GLfloat z_angle , GLfloat y_angle)
 	// glTranslatef(0.5,0.4,0); 
 
 	// 2) 회전을 시키고자 할때
+	// glRotatef(y_angle, 0, 1, 0); // y축 기준 회전 
 	glTranslatef(0.25, 0.2, 0); // 이동 
 	glRotatef(y_angle, 0, 1, 0); // y축 기준 회전 
 	glRotatef(z_angle, 0, 0, 1); // z축 기준 회전 
 	glTranslatef(0.25, 0.0, 0); // 이동
 	drawCuboid(0.5, 0.2, 0.2);
+	drawAxis();
 }
 
 void drawUpperLeftArm(GLfloat z_angle, GLfloat y_angle)
@@ -121,40 +123,44 @@ void drawLeftHand()
 	// drawAxis();
 }
 
-void drawUpperRightLeg(GLfloat angle)
+void drawUpperRightLeg(GLfloat z_angle, GLfloat x_angle)
 {
 	// 2) 회전을 시키고자 할때
-	glTranslatef(0.15, -1.1, 0); // 이동 
-	glRotatef(angle, 0, 0, 1); // z축 기준 회전 
-	glTranslatef(0.25, 0.0, 0); // 이동
+	glTranslatef(0.15, -0.65, 0); // 이동 
+	glRotatef(x_angle, 1, 0, 0); // x축 기준 회전 
+	glRotatef(z_angle, 0, 0, 1); // z축 기준 회전 
+	glTranslatef(0.25, 0.0, 0); // 오른쪽 x 좌표로 0.25만큼 이동
 	drawCuboid(0.7, 0.2, 0.2);
+	// drawAxis();
 }
 
-void drawUpperLeftLeg(GLfloat angle)
+void drawUpperLeftLeg(GLfloat z_angle, GLfloat x_angle)
 {
-	glTranslatef(-0.15, -1.1, 0); // 이동 
-	glRotatef(angle, 0, 0, 1); // z축 기준 회전 
-	glTranslatef(0.25, 0.0, 0); // 이동
+	glTranslatef(-0.15, -0.65, 0); // 이동 
+	glRotatef(x_angle, 1, 0, 0); // x축 기준 회전 
+	// glTranslatef(-0.0, -1.1, 0); // 이동
+	glRotatef(z_angle, 0, 0, 1); // z축 기준 회전 
+	glTranslatef(-0.25, 0.0, 0); // 이동
 	drawCuboid(0.7, 0.2, 0.2);
+	// drawAxis();
 }
 
 // 회전할 각도 지정 
 void drawLowerRightLeg(GLfloat angle)
 {
 	// drawAxis();
-	//glTranslatef(0, 0.25, 0); // 이동 
-	//glRotatef(angle, 0, 0, 1); // z축 기준 회전 
-	glTranslatef(-0.7, 0.0, 0); // 이동
+	glTranslatef(0.0, 0.0, -0.15); // 이동 
+	glTranslatef(0.65, 0.0, 0.0); // 이동
+	glRotatef(30, 0, 1, 0); // z축 기준 회전 
 	// drawAxis();
 	drawCuboid(0.7, 0.2, 0.2);
 }
 void drawLowerLeftLeg(GLfloat angle)
 {
 	// drawAxis();
-	//glTranslatef(0, 0.25, 0); // 이동 
-	//glRotatef(angle, 0, 0, 1); // z축 기준 회전 
-	glTranslatef(-0.7, 0.0, 0); // 이동
-	// drawAxis();
+	glTranslatef(0.0, 0.0, -0.15); // 이동 
+	glTranslatef(-0.65, 0.0, 0.0); // 이동
+	glRotatef(-30, 0, 1, 0); // z축 기준 회전 
 	drawCuboid(0.7, 0.2, 0.2);
 }
 

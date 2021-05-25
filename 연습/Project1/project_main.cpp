@@ -65,8 +65,7 @@ void selectSubMenu(int value);
 void selectDrawMenu(int value);
 void selectFigMenu(int value);
 void display();
-void clock_timer(int value);
-void robot_timer(int value);
+void my_timer(int value);
 
 
 int main(int argc, char** argv)
@@ -81,6 +80,8 @@ int main(int argc, char** argv)
 	glutMouseFunc(mymouse);
 	glutMotionFunc(mymousemotion);
 	glutKeyboardFunc(mykey);
+
+	glutTimerFunc(20, my_timer, 1);
 
 	int drawMenuId = glutCreateMenu(selectDrawMenu);
 		glutSetMenu(drawMenuId);// 현재 메뉴 지정 
@@ -230,10 +231,12 @@ void display()
 	{
 		// 카메라 시점 위에서 아래 보기로 초기화
 		drawClock(Clock2d);
-		glutTimerFunc(20,clock_timer,1);
 	}
 	if (displayMode == displayModes::THREE_D)
 	{
+		// 앞으로 숙이기
+		glRotatef(0, 1, 0, 0); // z축 기준 회전 
+
 		// 머리
 		drawHead();
 
@@ -256,19 +259,17 @@ void display()
 
 		// 왼쪽 다리
 		glPushMatrix();
-			drawUpperLeftLeg(robot.leftleg_angle_upper);
+			drawUpperLeftLeg(robot.leftleg_z_angle_upper,robot.leftleg_x_angle_upper);
 			drawLowerLeftLeg(robot.leftleg_angle_low);
 			// drawRightHand();
 		glPopMatrix();
 
 		// 오른쪽 다리
 		glPushMatrix();
-			drawUpperRightLeg(robot.rightleg_angle_upper);
+			drawUpperRightLeg(robot.rightleg_z_angle_upper,robot.rightleg_x_angle_upper);
 			drawLowerRightLeg(robot.rightleg_angle_low);
 			// drawRightHand();
 		glPopMatrix();
-
-		glutTimerFunc(1000 / 60, robot_timer, 1);
 	}
 	glutSwapBuffers();
 }
@@ -795,45 +796,42 @@ bool checkFigure(float x, float y)
 	return isFigClicked;
 }
 
-void clock_timer(int value)
+
+void my_timer(int value)
 {
-	if (Clock2d.clock_anim_on) Clock2d.clock_rotate_angle += 0.04;
-	glutTimerFunc(10000, clock_timer, 10000);
-	glutPostRedisplay();
-}
+	if (displayMode == displayModes::TWO_D)
+	{
+		if (Clock2d.clock_anim_on) Clock2d.clock_rotate_angle += 0.1;
+	}
+	else if (displayMode == displayModes::THREE_D)
+	{
+		int limit = 60;
+		robot.rightarm_y_angle_upper += robot.dir_right_upper;
+		// angle_low += dir_low;
+		if (robot.rightarm_y_angle_upper >= limit)
+			robot.dir_right_upper = -1;
+		else if (robot.rightarm_y_angle_upper < -limit)
+			robot.dir_right_upper = 1;
 
-void robot_timer(int value)
-{
-	robot.rightarm_y_angle_upper += robot.dir_upper;
-	// angle_low += dir_low;
-	if (robot.rightarm_y_angle_upper >= 60)
-		robot.dir_upper = -1;
-	else if (robot.rightarm_y_angle_upper < -60)
-		robot.dir_upper = 1;
+		robot.leftarm_y_angle_upper += robot.dir_left_upper;
+		// angle_low += dir_low;
+		if (robot.leftarm_y_angle_upper >= limit)
+			robot.dir_left_upper = -1;
+		else if (robot.leftarm_y_angle_upper < -limit)
+			robot.dir_left_upper = 1;
 
-	robot.leftarm_y_angle_upper -= robot.dir_upper;
-	// angle_low += dir_low;
-	if (robot.leftarm_y_angle_upper >= 60)
-		robot.dir_upper = -1;
-	else if (robot.leftarm_y_angle_upper < -60)
-		robot.dir_upper = 1;
-
-	/*if (angle_low >= 120)
-		dir_low = -4;
-	else if (angle_low < 0)
-		dir_low = 4;*/
-
-	// 카메라 회전 animation 
-	// 세로 y축을 기준으로
-	// y좌표는 그대로 있고 
-	// y 축 기준 돌아가면서 돌기 
-	GLfloat theta = 0.01;
-	GLfloat tmp_x = cam_pos.camx; // 기존에 있던 x 좌표 그대로 
-	cam_pos.camx = cam_pos.camx * cos(theta) + cam_pos.camz * sin(theta);
-	cam_pos.camz = -tmp_x * sin(theta) + cam_pos.camz * cos(theta);
-
-	// 참고 : 카메라 변환 애니메이션은 
-	// 별도 timer func 둬도 된다 
-	glutTimerFunc(10000, robot_timer, 10000);
+		// 카메라 회전 animation 
+		// 세로 y축을 기준으로
+		// y좌표는 그대로 있고 
+		// y 축 기준 돌아가면서 돌기 
+		GLfloat theta = 0.01;
+		GLfloat tmp_x = cam_pos.camx; // 기존에 있던 x 좌표 그대로 
+		cam_pos.camx = cam_pos.camx * cos(theta) + cam_pos.camz * sin(theta);
+		cam_pos.camz = -tmp_x * sin(theta) + cam_pos.camz * cos(theta);
+		// 참고 : 카메라 변환 애니메이션은 
+		// 별도 timer func 둬도 된다 
+	}
+	
+	glutTimerFunc(1000/60, my_timer, 1);
 	glutPostRedisplay();
 }
