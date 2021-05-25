@@ -151,7 +151,7 @@ void drawLowerRightLeg(GLfloat angle)
 	// drawAxis();
 	glTranslatef(0.0, 0.0, -0.15); // 이동 
 	glTranslatef(0.65, 0.0, 0.0); // 이동
-	glRotatef(30, 0, 1, 0); // z축 기준 회전 
+	glRotatef(angle, 0, 1, 0); // z축 기준 회전 
 	// drawAxis();
 	drawCuboid(0.7, 0.2, 0.2);
 }
@@ -160,7 +160,7 @@ void drawLowerLeftLeg(GLfloat angle)
 	// drawAxis();
 	glTranslatef(0.0, 0.0, -0.15); // 이동 
 	glTranslatef(-0.65, 0.0, 0.0); // 이동
-	glRotatef(-30, 0, 1, 0); // z축 기준 회전 
+	glRotatef(-angle, 0, 1, 0); // z축 기준 회전 
 	drawCuboid(0.7, 0.2, 0.2);
 }
 

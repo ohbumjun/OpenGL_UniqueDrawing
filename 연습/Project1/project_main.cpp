@@ -235,7 +235,7 @@ void display()
 	if (displayMode == displayModes::THREE_D)
 	{
 		// 앞으로 숙이기
-		glRotatef(0, 1, 0, 0); // z축 기준 회전 
+		glRotatef(10, 1, 0, 0); // z축 기준 회전 
 
 		// 머리
 		drawHead();
@@ -805,25 +805,39 @@ void my_timer(int value)
 	}
 	else if (displayMode == displayModes::THREE_D)
 	{
-		int limit = 60;
-		robot.rightarm_y_angle_upper += robot.dir_right_upper;
+		// 팔 
+		int arm_limit = 45;
+		robot.rightarm_y_angle_upper += robot.dir_arm_right_upper;
 		// angle_low += dir_low;
-		if (robot.rightarm_y_angle_upper >= limit)
-			robot.dir_right_upper = -1;
-		else if (robot.rightarm_y_angle_upper < -limit)
-			robot.dir_right_upper = 1;
+		if (robot.rightarm_y_angle_upper >= arm_limit)
+			robot.dir_arm_right_upper = -1;
+		else if (robot.rightarm_y_angle_upper < -arm_limit)
+			robot.dir_arm_right_upper = 1;
 
-		robot.leftarm_y_angle_upper += robot.dir_left_upper;
+		robot.leftarm_y_angle_upper += robot.dir_arm_left_upper;
 		// angle_low += dir_low;
-		if (robot.leftarm_y_angle_upper >= limit)
-			robot.dir_left_upper = -1;
-		else if (robot.leftarm_y_angle_upper < -limit)
-			robot.dir_left_upper = 1;
+		if (robot.leftarm_y_angle_upper >= arm_limit)
+			robot.dir_arm_left_upper = -1;
+		else if (robot.leftarm_y_angle_upper < -arm_limit)
+			robot.dir_arm_left_upper = 1;
+
+		// 다리 
+		int leg_limit = 45;
+		robot.rightleg_x_angle_upper += robot.dir_leg_right_upper;
+		// angle_low += dir_low;
+		if (robot.rightleg_x_angle_upper >= arm_limit)
+			robot.dir_leg_right_upper = -1;
+		else if (robot.rightleg_x_angle_upper < -arm_limit)
+			robot.dir_leg_right_upper = 1;
+
+		robot.leftleg_x_angle_upper += robot.dir_leg_left_upper;
+		// angle_low += dir_low;
+		if (robot.leftleg_x_angle_upper >= arm_limit)
+			robot.dir_leg_left_upper = -1;
+		else if (robot.leftleg_x_angle_upper < -arm_limit)
+			robot.dir_leg_left_upper = 1;
 
 		// 카메라 회전 animation 
-		// 세로 y축을 기준으로
-		// y좌표는 그대로 있고 
-		// y 축 기준 돌아가면서 돌기 
 		GLfloat theta = 0.01;
 		GLfloat tmp_x = cam_pos.camx; // 기존에 있던 x 좌표 그대로 
 		cam_pos.camx = cam_pos.camx * cos(theta) + cam_pos.camz * sin(theta);

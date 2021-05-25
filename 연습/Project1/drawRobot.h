@@ -10,19 +10,21 @@ struct Robot
 	int rightarm_angle_low = -45;
 
 	int rightleg_z_angle_upper = -90;
-	int rightleg_x_angle_upper = -30;
-	int rightleg_angle_low = 90;
+	int rightleg_x_angle_upper = 45;
+	int rightleg_angle_low = 30;
 
 	int leftarm_z_angle_upper = 45;
 	int leftarm_y_angle_upper = -45;
 	int leftarm_angle_low = 45;
 
 	int leftleg_z_angle_upper = 90;
-	int leftleg_x_angle_upper = 30;
-	int leftleg_angle_low = 90;
+	int leftleg_x_angle_upper = -45;
+	int leftleg_angle_low = 30;
 
-	int dir_left_upper = 1;
-	int dir_right_upper = 1;
+	int dir_arm_left_upper = 1;
+	int dir_arm_right_upper = 1;
+	int dir_leg_left_upper = 1;
+	int dir_leg_right_upper = 1;
 	int dir_low = 4;
 };
 
