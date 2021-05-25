@@ -76,7 +76,6 @@ bool checkFigure(float x, float y)
 }
 
 
-
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
@@ -134,9 +133,44 @@ int main(int argc, char** argv)
 
 void drawClock()
 {
+	// glClear(GL_COLOR_BUFFER_BIT);
+	float radius = 0.3;
 	glPushMatrix();
-		glScalef(2, 4, 0);
-		glutWireCube(0.25);
+		// 배경 시계
+		glColor3f(1, 1, 1);
+		vector3D center = vector3D(0,0,0);
+		circle(center, radius);
+
+		// 12시
+		glColor3f(0, 0, 0);
+		vector3D twelve_top = vector3D(0, radius , 0);
+		vector3D twelve_down = vector3D(0, radius - radius*0.1, 0);
+		line(twelve_top, twelve_down);
+		// 3시
+		vector3D three_left = vector3D(-radius, 0, 0);
+		vector3D three_right = vector3D(-radius + radius*0.1, 0, 0);
+		line(three_left, three_right);
+		// 6시
+		vector3D six_down = vector3D(0, -radius, 0);
+		vector3D six_up = vector3D(0, -radius + radius*0.1, 0);
+		line(six_down, six_up);
+		// 9시
+		vector3D nine_left = vector3D(radius - radius*0.1, 0, 0);
+		vector3D nine_right = vector3D(radius, 0, 0);
+		line(nine_left, nine_right);
+
+		// 2개 축 세팅 
+		glPushMatrix();
+			vector3D small_end = vector3D(0, radius * 0.3, 0);
+			vector3D big_end = vector3D(0, radius * 0.6, 0);
+			glLineWidth(10);
+			glColor3f(0.8, 0.8, 0.8);
+			line(0, small_end);
+			glColor3f(0.9, 0.9, 0.9);
+			glRotatef(-30, 0, 0, 1);
+			line(0, big_end);
+		glPopMatrix();
+
 	glPopMatrix();
 }
 
@@ -227,7 +261,7 @@ void display()
 	glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_POLYGON_SMOOTH);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+	
 	// 중앙을 나타내기 위해 점 하나 가운데에 그리기
 	glPointSize(5);
 	glBegin(GL_POINTS);
@@ -398,7 +432,7 @@ void mykey(unsigned char key, int x, int y)
 			glutPostRedisplay();
 		}
 		break;
-	case 46:
+	case 127:
 		std::cout << "delete btn clicked" << std::endl;
 		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1) {
 			// 해당 idx 부터 시작하여, array idx + 1을 앞으로 끌어당긴다

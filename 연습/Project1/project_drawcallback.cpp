@@ -21,7 +21,6 @@ void circle(vector3D center, float radius)
 	glBegin(GL_POLYGON);
 	// 마지막 증감분 f += M_PI / 36.0 : 얼마나 세세하게 점을 찍을 것인가 
 	// M_PI : 3.14 = 파이 --> 2*파이 : 360 도에 해당한다
-
 	for (float f = 0.0; f < 2 * M_PI; f += M_PI / 36.0) // 36.0 으로 나눈다는 것은 10씩 증가시킨다 
 	{
 		// 원을 나타내는 수식 : x^2  + y^2 = r^2
