@@ -46,7 +46,6 @@ struct campos {
 };
 campos cam_pos;
 
-void drawFigures();
 void reshape(int width, int height);
 void mykey(unsigned char key, int x, int y);
 bool checkRange(float x, float y, float poly_a_x, float poly_a_y, float poly_b_x, float poly_b_y);
@@ -58,6 +57,8 @@ void selectMenu(int value);
 void selectSubMenu(int value);
 void selectDrawMenu(int value);
 void selectFigMenu(int value);
+void display();
+void drawSimpleDrawing(vector3D a, vector3D b, vector3D color);
 
 bool checkFigure(float x, float y)
 {
@@ -84,7 +85,7 @@ int main(int argc, char** argv)
 	glutCreateWindow("simple");
 
 	glutReshapeFunc(reshape);
-	glutDisplayFunc(drawFigures);
+	glutDisplayFunc(display);
 	glutMouseFunc(mymouse);
 	glutMotionFunc(mymousemotion);
 	glutKeyboardFunc(mykey);
@@ -133,14 +134,74 @@ int main(int argc, char** argv)
 
 void drawClock()
 {
-
+	glPushMatrix();
+		glScalef(2, 4, 0);
+		glutWireCube(0.25);
+	glPopMatrix();
 }
 
-void drawFigures()
+void drawSimpleDrawing(vector3D a, vector3D b, vector3D color)
+{
+	for (int i = 0; i <= index; i++) {
+		// .on == false : 아직 드래그가 안끝난 것 ( 아직 안그려진 것 )
+		if (polygon[i].on == true) {
+			a = polygon[i].a;
+			b = polygon[i].b;
+			color = polygon[i].color;
+			figureMode = static_cast<figureModes>(polygon[i].pmode);
+			glColor3f(color.x, color.y, color.z);
+			if (figureMode == figureModes::LINE)
+				line(a, b);
+			else if (figureMode == figureModes::RENTANGLE) {  //rectangle
+				rect(a, b);
+			}
+			else if (figureMode == figureModes::TRIANGLE) {
+				//triangle
+				vector3D lDown, mTop, rDown;
+				// x : 가로위치, y : 세로 위치 
+				lDown = vector3D(a.x, b.y, 0);
+				mTop = vector3D(a.x + (b.x - a.x) / 2, a.y, 0);
+				rDown = b;
+				triangle(mTop, lDown, rDown);
+			}
+			else if (figureMode == figureModes::ELLIPSE) {
+				//ellipse
+				float width = (b.x - a.x) / 2;
+				float height = (a.y - b.y) / 2;
+				vector3D center = vector3D(a.x + width / 2, b.y + height, 0);
+				ellipse(center, width, height);
+			}
+			else if (figureMode == figureModes::SPHERE) {
+				float radius = (b.x - a.x) / 2;
+				vector3D center = vector3D(a.x + radius / 2, b.y + radius, 0);
+				circle(center, radius);
+			}
+			else if (figureMode == figureModes::BIG_ARROW) {
+				vector3D recLTop, recRDown;
+				recLTop = vector3D(a.x, a.y - (a.y - b.y) * 0.3, 0);
+				recRDown = vector3D(a.x + (b.x - a.x) * 0.6, b.y + (a.y - b.y) * 0.3, 0);
+				rect(recLTop, recRDown);
+				vector3D lTop, rMid, lDown;
+				lTop = vector3D(a.x + (b.x - a.x) * 0.6, a.y, 0);
+				rMid = vector3D(b.x, b.y + (a.y - b.y) * 0.5, 0);
+				lDown = vector3D(a.x + (b.x - a.x) * 0.6, b.y, 0);
+				triangle(lTop, rMid, lDown);
+			}
+			else if (figureMode == figureModes::THREE_WAY_LINE) {
+				vector3D fstP = a;
+				vector3D secP = vector3D(a.x, b.y + (a.y - b.y) / 2, 0);
+				vector3D trdP = vector3D(b.x, b.y + (a.y - b.y) / 2, 0);
+				vector3D fthP = b;
+				threeline(fstP, secP, trdP, fthP);
+			}
+		}
+	}
+}
+
+void display()
 {
 	vector3D a, b;
 	vector3D color = vector3D(0.9, 0.0, 0.9);
-	int mode = 1;
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -172,62 +233,13 @@ void drawFigures()
 	glBegin(GL_POINTS);
 		glVertex3f(0, 0, 0);
 	glEnd();
-	ellipse(0, 0, 0);
 
-	for (int i = 0; i <= index; i++) {
-		// .on == false : 아직 드래그가 안끝난 것 ( 아직 안그려진 것 )
-		if (polygon[i].on == true) {
-			a = polygon[i].a;
-			b = polygon[i].b;
-			color = polygon[i].color;
-			figureMode = static_cast<figureModes>(polygon[i].pmode);
-			glColor3f(color.x, color.y, color.z);
-			if (figureMode == figureModes::LINE)
-				line(a, b);
-			else if (figureMode == figureModes::RENTANGLE) {  //rectangle
-				rect(a, b);
-			}
-			else if (figureMode == figureModes::TRIANGLE) {
-				//triangle
-				vector3D lDown, mTop, rDown;
-				// x : 가로위치, y : 세로 위치 
-				lDown = vector3D(a.x, b.y,0);
-				mTop = vector3D(a.x + (b.x - a.x) / 2, a.y,0);
-				rDown = b;
-				triangle(mTop, lDown, rDown);
-			}
-			else if (figureMode == figureModes::ELLIPSE) {
-				//ellipse
-				float width = (b.x - a.x) / 2;
-				float height = (a.y - b.y) / 2;
-				vector3D center = vector3D(a.x + width / 2, b.y + height, 0);
-				ellipse(center, width, height);
-			}
-			else if (figureMode == figureModes::SPHERE) {
-				float radius = (b.x - a.x) / 2;
-				vector3D center = vector3D(a.x + radius / 2, b.y + radius, 0);
-				circle(center, radius);
-			}
-			else if (figureMode == figureModes::BIG_ARROW) {
-				vector3D recLTop, recRDown;
-				recLTop = vector3D(a.x, a.y - (a.y - b.y) * 0.3,0);
-				recRDown = vector3D(a.x + (b.x - a.x) * 0.6, b.y + (a.y - b.y) * 0.3,0);
-				rect(recLTop, recRDown);
-				vector3D lTop, rMid, lDown;
-				lTop = vector3D(a.x + (b.x - a.x) * 0.6, a.y,0);
-				rMid = vector3D(b.x, b.y + (a.y - b.y) * 0.5,0);
-				lDown = vector3D(a.x + (b.x - a.x) * 0.6, b.y,0);
-				triangle(lTop, rMid, lDown);
-			}
-			else if (figureMode == figureModes::THREE_WAY_LINE) {
-				vector3D fstP = a;
-				vector3D secP = vector3D(a.x, b.y + (a.y - b.y) / 2,0);
-				vector3D trdP = vector3D(b.x, b.y + (a.y - b.y) / 2,0);
-				vector3D fthP = b;
-				threeline(fstP, secP, trdP, fthP);
-			}
-		}
-	}
+	if (displayMode == displayModes::SIMPLE_DRAWING)
+		drawSimpleDrawing(a,b,color);
+	if (displayMode == displayModes::TWO_D)
+		drawClock();
+
+	
 	glutSwapBuffers();
 }
 
@@ -404,7 +416,6 @@ void mykey(unsigned char key, int x, int y)
 		break;
 	case 'o':
 		cout << "zoom out" << endl;
-		
 		cam_pos.camz += 0.01;
 		glutPostRedisplay();
 		break;
@@ -603,15 +614,26 @@ void selectSubMenu(int value) {
 	if (value == 2)
 	{
 		displayMode = displayModes::TWO_D;
+		glutPostRedisplay();
 	}
 	// 3d
 	else if (value == 3)
 	{
 		displayMode = displayModes::THREE_D;
+		glutPostRedisplay();
+	}
+	else {
+		displayMode = displayModes::SIMPLE_DRAWING;
 	}
 }
 void selectDrawMenu(int value) {
 	//enum drawModes { DRAW_OBJECT = 1, EDIT_OBJECT, RESIZE_OBJECT };
+	if (displayMode != displayModes::SIMPLE_DRAWING)
+	{
+		displayMode = displayModes::SIMPLE_DRAWING;
+		glutPostRedisplay();
+	}
+
 	if (value == 1)
 		drawMode = drawModes::DRAW_OBJECT;
 	else if (value == 2)
@@ -621,6 +643,12 @@ void selectDrawMenu(int value) {
 }
 void selectFigMenu(int value) {
 	// 도형 모양 선택하기 
+	if (displayMode != displayModes::SIMPLE_DRAWING)
+	{
+		displayMode = displayModes::SIMPLE_DRAWING;
+		glutPostRedisplay();
+	}
+	
 	if (value == 1) // line
 		figureMode = figureModes::LINE;
 	else if (value == 2) // 사각형 
@@ -635,4 +663,5 @@ void selectFigMenu(int value) {
 		figureMode = figureModes::BIG_ARROW;
 	else if (value == 7) // 세방향 직선 조합 그리기 
 		figureMode = figureModes::THREE_WAY_LINE;
+	
 }
