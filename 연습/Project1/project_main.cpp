@@ -353,6 +353,34 @@ void mykey(unsigned char key, int x, int y)
 			glutPostRedisplay();
 		}
 		break;
+	case 'o': 
+		cout << "zoom out" << endl;
+		// 선택한 도형 축소 
+		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
+		{
+			// 해당 도형의 z 축 조정 하기 
+		}
+		// 전반적 camera zoom out
+		else
+		{
+			cam_pos.camz += 0.01;
+			glutPostRedisplay();
+		}
+		break;
+	case 'i': 
+		cout << "zoom in" << endl;
+		// 선택한 도형 축소 
+		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
+		{
+			// 해당 도형의 z 축 조정 하기 
+		}
+		// 전반적 camera zoom in
+		else
+		{
+			cam_pos.camz -= 0.01;
+			glutPostRedisplay();
+		}
+		break;
 	default :
 		break;
 
