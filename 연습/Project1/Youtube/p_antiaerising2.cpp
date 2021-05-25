@@ -1,9 +1,10 @@
-// 모델 변환 실습 
-#include "cg.h"
-#include "math.h"
-#include <stdio.h>
+
 
 /*
+// 모델 변환 실습 
+#include "../cg.h"
+#include "math.h"
+#include <stdio.h>
 
 #define _WINDOW_HEIGHT 700
 #define _WINDOW_WIDTH  700

@@ -2,6 +2,8 @@
 
 #include "cg.h"
 #include "draw.h"
+#include "drawRobot.h"
+#include "drawClock.h"
 #include <cmath>
 #include<iostream>
 
@@ -22,14 +24,6 @@ polytype polygon[100];
 int clickedFigIdx = -1 ;
 int index = 0; // 몇번째 polygon 을 그리고 있는가 
 
-class Clock2D {
-public :
-	float clock_rotate_angle = 0.0;
-	bool clock_anim_on = true;
-	vector3D clock_center = vector3D(0, 0, 0);
-	vector3D clock_bigtick_color   = vector3D(0.8,0.8,0.8);
-	vector3D clock_smalltick_color = vector3D(0.9,0.9,0.9) ;
-};
 Clock2D Clock2d;
 
 enum class displayModes {SIMPLE_DRAWING = 1, TWO_D, THREE_D};
@@ -44,19 +38,13 @@ enum class resizeDirs {LEFT_TOP = 1,LEFT_BOTTOM,RIGHT_TOP,RIGHT_BOTTOM};
 resizeDirs resizeDir = resizeDirs::LEFT_TOP;
 vector3D color = vector3D(0.9, 0.9, 0.8);
 
-struct Robot
-{
-	int angle_upper = 0;
-	int angle_low = 0;
-	int dir_upper = 1;
-	int dir_low = 4;
-};
+
 Robot robot;
 
 struct Campos {
 	// cam : 어디서 보느냐
-// ex) 0.5, -0.5 ,1 : 밑에서 위를 보기 
-// ex) 0.0, -0.0 ,5 : 맨 위에서 아래를 내려다 보기
+	// ex) 0.5, -0.5 ,1 : 밑에서 위를 보기 
+	// ex) 0.0, -0.0 ,5 : 맨 위에서 아래를 내려다 보기
 	GLfloat camx = 0.0, camy = -0.0, camz = 1;
 	// center : 어디를 보느냐 
 	GLfloat cam2x = 0, cam2y = 0, cam2z = 0;// 원점 바라봄
@@ -77,24 +65,10 @@ void selectSubMenu(int value);
 void selectDrawMenu(int value);
 void selectFigMenu(int value);
 void display();
-void drawAxis();
-void drawXAxis();
-void drawSimpleDrawing(vector3D a, vector3D b, vector3D color);
+void clock_timer(int value);
 
-bool checkFigure(float x, float y)
-{
-	bool isFigClicked = false;
-	for (int i = index; i >= 0; i--) {
-		if (checkRange(x,y, polygon[i].a.x, polygon[i].a.y, polygon[i].b.x, polygon[i].b.y))
-		{
-			clickedFigIdx = i;
-			isFigClicked = true;
-			break;
-		}
-	}
-	cout << "clickedFigIdx : " << clickedFigIdx << endl;
-	return isFigClicked;
-}
+
+
 
 int main(int argc, char** argv)
 {
@@ -149,167 +123,6 @@ int main(int argc, char** argv)
 		glutAddMenuEntry("Exit", 2);
 
 	glutMainLoop();
-}
-
-void drawCube()
-{
-	glScalef(2, 1, 1); // x축으로 2배 늘리기
-	glRotatef(30, 0, 0, 1);  // 회전하고
-	glTranslatef(0.3, 0, 0); // 이동시키고
-
-	// 하지만,우리가 적용한 것 반대로 적용되기 때문에
-	// 1.이동 + 2. 해당 위치에서 회전 + 3. size 늘리기
-	glutWireCube(0.2);
-}
-
-void drawCuboid(GLfloat sx, GLfloat sy, GLfloat sz)
-{
-	// 몸 파트 부분에 해당하는, 직육면체 그리기 
-	glPushMatrix();
-	glScalef(sx, sy, sz);
-	glutWireCube(1);
-	glPopMatrix();
-}
-
-void drawUpperArm(GLfloat angle)
-{
-	// 이동 부분 
-	// 1) 만일, 회전없이 그냥 몸통 사각형 오른쪽 위에 붙일 때 
-	// cube 위치가 x축으로 2, wirecube는 0.25배 
-	//-->> 2 * 0.25 = 0.5
-	// glTranslatef(0.5,0.4,0); 
-
-	// 2) 회전을 시키고자 할때
-	glTranslatef(0.25, 0.2, 0); // 이동 
-	glRotatef(angle, 0, 0, 1); // z축 기준 회전 
-	glTranslatef(0.25, 0.0, 0); // 이동
-
-	drawCuboid(0.5, 0.2, 0.2);
-}
-
-// 회전할 각도 지정 
-void drawLowerArm(GLfloat angle)
-{
-	// drawAxis();
-	glTranslatef(0.25, 0.0, 0); // 이동 
-	glRotatef(angle, 0, 0, 1); // z축 기준 회전 
-	glTranslatef(0.25, 0.0, 0); // 이동
-	// drawAxis();
-	drawCuboid(0.5, 0.2, 0.2);
-}
-
-// pipeline
-// body 그리고 -> 좌표축 x,y,z 기준 이동시키면서 upperArm 그리고 
-// --> axis 그리고 ( glMatrixMode를 통한 초기화 생략 ) -->  변경된 x,y,z 기준으로 하여 LowerArm 그리고 
-
-void drawBody()
-{
-	glPushMatrix();
-	glScalef(2, 4, 1);
-	glutWireCube(0.25);
-	glPopMatrix();
-}
-
-void drawHand()
-{
-	// drawAxis();
-	// 구.를 그리기
-	glTranslatef(0.35, 0, 0);
-	glutWireSphere(0.1, 15, 15);
-	drawAxis();
-}
-
-void drawFinger()
-{
-	glTranslatef(0.15, 0, 0);
-	drawCuboid(0.1, 0.02, 0.02);
-}
-void drawFinger2()
-{
-	glRotatef(30, 0, 0, 1);
-	glTranslatef(0.15, 0, 0);
-	drawCuboid(0.1, 0.02, 0.02);
-}
-
-
-// 3d drawing
-void drawRunningRobot()
-{
-	// cam 다시 세팅  
-
-}
-
-// 2d drawing 
-void drawClock()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-	float radius = 0.3;
-	
-		// 배경 시계
-		glColor3f(1, 1, 1);
-		circle(Clock2d.clock_center, radius);
-
-		// 12시
-		glColor3f(0, 0, 0);
-		vector3D twelve_top = vector3D(Clock2d.clock_center.x, Clock2d.clock_center.y + radius , 0);
-		vector3D twelve_down = vector3D(Clock2d.clock_center.x, Clock2d.clock_center.y + radius * 0.9, 0);
-		line(twelve_top, twelve_down);
-		// 3시
-		vector3D three_left = vector3D(Clock2d.clock_center.x -radius, Clock2d.clock_center.y, 0);
-		vector3D three_right = vector3D(Clock2d.clock_center.x - radius*0.9 , Clock2d.clock_center.y, 0);
-		line(three_left, three_right);
-		// 6시
-		vector3D six_down = vector3D(Clock2d.clock_center.x, Clock2d.clock_center.y - radius, 0);
-		vector3D six_up = vector3D(Clock2d.clock_center.x, Clock2d.clock_center.y -radius * 0.9, 0);
-		line(six_down, six_up);
-		// 9시
-		vector3D nine_left = vector3D(Clock2d.clock_center.x + radius * 0.9, 0, 0);
-		vector3D nine_right = vector3D(Clock2d.clock_center.x + radius, 0, 0);
-		line(nine_left, nine_right);
-
-		// 2개 축 세팅 
-		glPushMatrix();
-
-			vector3D small_end = vector3D(Clock2d.clock_center.x, Clock2d.clock_center.y + radius * 0.3, 0);
-			glLineWidth(10);
-			glRotatef(-Clock2d.clock_rotate_angle, Clock2d.clock_center.x, Clock2d.clock_center.y, 1);
-			glColor3f(
-				Clock2d.clock_smalltick_color[0] ,
-				Clock2d.clock_smalltick_color[1] ,
-				Clock2d.clock_smalltick_color[2]
-			);
-			glBegin(GL_LINES);
-				glVertex3f(Clock2d.clock_center.x, Clock2d.clock_center.y, 0);
-				glVertex3f(small_end.x, small_end.y, 0);
-			glEnd();
-			line(0, small_end);
-			glLineWidth(1);
-		
-			vector3D big_end = vector3D(Clock2d.clock_center.x, Clock2d.clock_center.y + radius * 0.6, 0);
-			glLineWidth(10);
-			glRotatef(-Clock2d.clock_rotate_angle*1.1, Clock2d.clock_center.x, Clock2d.clock_center.y, 1);
-			glColor3f(
-				Clock2d.clock_bigtick_color[0] ,
-				Clock2d.clock_bigtick_color[1] ,
-				Clock2d.clock_bigtick_color[2]
-			);
-			glBegin(GL_LINES);
-				glVertex3f(Clock2d.clock_center.x, Clock2d.clock_center.y, 0);
-				glVertex3f(big_end.x, big_end.y, 0);
-			glEnd();
-			glLineWidth(1);
-			glRotatef(0, 0, 0, 1);
-
-		glPopMatrix();
-
-		// cout << "clock rotate angle" << clock_rotate_angle << endl;
-}
-
-void clock_timer(int value)
-{
-	if (Clock2d.clock_anim_on) Clock2d.clock_rotate_angle += 0.04;
-	glutTimerFunc(10000, clock_timer, 10000);
-	glutPostRedisplay();
 }
 
 void drawSimpleDrawing(vector3D a, vector3D b, vector3D color)
@@ -370,58 +183,6 @@ void drawSimpleDrawing(vector3D a, vector3D b, vector3D color)
 	}
 }
 
-void drawXAxis()
-{
-	glBegin(GL_LINES);
-	// x축 방향 
-	glVertex3f(0, 0, 0);
-	glVertex3f(0.2, 0, 0);
-	glVertex3f(0.2, 0, 0);
-	glVertex3f(0.18, 0.03, 0);
-	glVertex3f(0.2, 0, 0);
-	glVertex3f(0.18, -0.03, 0);
-	glEnd();
-}
-
-// 축 그리기
-void drawAxis()
-{
-	glBegin(GL_LINES);
-	glColor3f(1, 1, 1);
-
-	// matrix 그리기 x,y,z 축 초기화 
-	// glMatrixMode(GL_MODELVIEW); 
-	// glLoadIdentity();
-
-	// x축 방향  -> y,z는 rotate 를 통해 구현
-	drawXAxis();
-	// y축
-	glRotatef(90, 0, 0, 1); // x축을 y축으로 만드려면, z축 기준 돌려야 한다 
-	drawXAxis();
-	glRotatef(-90, 0, 0, 1); // 원상태로 되돌리기(이 과정이 없으면, 복합 변환이 되버린다 ) 
-	// z 축 
-	glRotatef(-90, 0, 1, 0);
-	drawXAxis();
-	glRotatef(90, 0, 1, 0);
-
-	//돌리고, 원상태로 해주는
-	//코드의 세트가 사실, 편하지는 않기 때문에
-	//drawXAxis();
-	//glPushMatrix();
-	//	glRotatef(90,0,0,1);  
-	//	drawXAxis();
-	//glPopMatrix();
-	//glPushMatrix();
-	//	glRotatef(-90, 0, 1, 0);
-	//	drawXAxis();
-	//glPopMatrix();
-
-	//와 같이 
-	//Matrix  push 하여 저장했다가,pop 시켜주는 방식의
-	//코드를 작성하기도 한다 
-
-	glEnd();
-}
 
 void display()
 {
@@ -469,24 +230,44 @@ void display()
 	if (displayMode == displayModes::TWO_D)
 	{
 		// 카메라 시점 위에서 아래 보기로 초기화
-		drawClock();
+		drawClock(Clock2d);
 		glutTimerFunc(20,clock_timer,1);
 	}
 	if (displayMode == displayModes::THREE_D)
 	{
-		drawBody();
+		// 머리
+		drawHead();
 
-		drawUpperArm(robot.angle_upper);
-		drawLowerArm(robot.angle_low);
-		drawHand();
+		// 몸통
+		drawBody();
+		
+		// 왼쪽 팔
 		glPushMatrix();
-		drawFinger();
+			drawUpperLeftArm(robot.leftarm_angle_upper);
+			drawLowerLeftArm(robot.leftarm_angle_low);
+			drawLeftHand();
 		glPopMatrix();
+
+		// 오른쪽 팔
 		glPushMatrix();
-		drawFinger2();
+			drawUpperRightArm(robot.rightarm_angle_upper);
+			drawLowerRightArm(robot.rightarm_angle_low);
+			drawRightHand();
 		glPopMatrix();
-		drawAxis();
-		drawRunningRobot();
+
+		// 왼쪽 다리
+		glPushMatrix();
+			drawUpperLeftLeg(robot.leftleg_angle_upper);
+			drawLowerLeftLeg(robot.leftleg_angle_low);
+			// drawRightHand();
+		glPopMatrix();
+
+		// 오른쪽 다리
+		glPushMatrix();
+			drawUpperRightLeg(robot.rightleg_angle_upper);
+			drawLowerRightLeg(robot.rightleg_angle_low);
+			// drawRightHand();
+		glPopMatrix();
 	}
 	glutSwapBuffers();
 }
@@ -958,7 +739,6 @@ void selectSubMenu(int value) {
 		cam_pos.camx = 1, cam_pos.camy = 1; cam_pos.camz = 4;
 		glutPostRedisplay();
 	}
-
 }
 void selectDrawMenu(int value) {
 	//enum drawModes { DRAW_OBJECT = 1, EDIT_OBJECT, RESIZE_OBJECT };
@@ -997,4 +777,26 @@ void selectFigMenu(int value) {
 		figureMode = figureModes::BIG_ARROW;
 	else if (value == 7) // 세방향 직선 조합 그리기 
 		figureMode = figureModes::THREE_WAY_LINE;
+}
+
+bool checkFigure(float x, float y)
+{
+	bool isFigClicked = false;
+	for (int i = index; i >= 0; i--) {
+		if (checkRange(x, y, polygon[i].a.x, polygon[i].a.y, polygon[i].b.x, polygon[i].b.y))
+		{
+			clickedFigIdx = i;
+			isFigClicked = true;
+			break;
+		}
+	}
+	cout << "clickedFigIdx : " << clickedFigIdx << endl;
+	return isFigClicked;
+}
+
+void clock_timer(int value)
+{
+	if (Clock2d.clock_anim_on) Clock2d.clock_rotate_angle += 0.04;
+	glutTimerFunc(10000, clock_timer, 10000);
+	glutPostRedisplay();
 }

@@ -1,12 +1,10 @@
 // 모델 변환 실습 
-#include "cg.h"
-#include "math.h"
 
 /*
+#include "cg.h"
+#include "math.h"
 #define _WINDOW_HEIGHT 600
 #define _WINDOW_WIDTH  600
-
-
 
 int angle_upper=0;
 int angle_low=0;

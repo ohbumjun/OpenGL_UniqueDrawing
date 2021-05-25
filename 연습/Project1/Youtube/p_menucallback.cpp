@@ -1,5 +1,7 @@
-#include "cg.h"
+
 /*
+#include "cg.h"
+
 #define _WINDOW_HEIGHT 300
 #define _WINDOW_WIDTH 100
 
