@@ -479,6 +479,8 @@ void mykey(unsigned char key, int x, int y)
 		// 2d : clock animation on, off 기능
 		if (displayMode == displayModes::TWO_D)
 			Clock2d.clock_anim_on = !Clock2d.clock_anim_on;
+		else if (displayMode == displayModes::THREE_D)
+			robot.robot_anim_on = !robot.robot_anim_on;
 		break;
 	case 'w':
 		// draw mode에 있고 + 선택한 도형이 존재한다면, 위로 이동 
@@ -807,14 +809,16 @@ void my_timer(int value)
 	{
 		// 팔 
 		int arm_limit = 45;
-		robot.rightarm_y_angle_upper += robot.dir_arm_right_upper;
+		if(robot.robot_anim_on)
+			robot.rightarm_y_angle_upper += robot.dir_arm_right_upper;
 		// angle_low += dir_low;
 		if (robot.rightarm_y_angle_upper >= arm_limit)
 			robot.dir_arm_right_upper = -1;
 		else if (robot.rightarm_y_angle_upper < -arm_limit)
 			robot.dir_arm_right_upper = 1;
 
-		robot.leftarm_y_angle_upper += robot.dir_arm_left_upper;
+		if (robot.robot_anim_on)
+			robot.leftarm_y_angle_upper += robot.dir_arm_left_upper;
 		// angle_low += dir_low;
 		if (robot.leftarm_y_angle_upper >= arm_limit)
 			robot.dir_arm_left_upper = -1;
@@ -823,14 +827,16 @@ void my_timer(int value)
 
 		// 다리 
 		int leg_limit = 45;
-		robot.rightleg_x_angle_upper += robot.dir_leg_right_upper;
+		if (robot.robot_anim_on)
+			robot.rightleg_x_angle_upper += robot.dir_leg_right_upper;
 		// angle_low += dir_low;
 		if (robot.rightleg_x_angle_upper >= arm_limit)
 			robot.dir_leg_right_upper = -1;
 		else if (robot.rightleg_x_angle_upper < -arm_limit)
 			robot.dir_leg_right_upper = 1;
 
-		robot.leftleg_x_angle_upper += robot.dir_leg_left_upper;
+		if (robot.robot_anim_on)
+			robot.leftleg_x_angle_upper += robot.dir_leg_left_upper;
 		// angle_low += dir_low;
 		if (robot.leftleg_x_angle_upper >= arm_limit)
 			robot.dir_leg_left_upper = -1;
@@ -845,7 +851,6 @@ void my_timer(int value)
 		// 참고 : 카메라 변환 애니메이션은 
 		// 별도 timer func 둬도 된다 
 	}
-	
 	glutTimerFunc(1000/60, my_timer, 1);
 	glutPostRedisplay();
 }

@@ -75,7 +75,7 @@ void drawUpperRightArm(GLfloat z_angle , GLfloat y_angle)
 	glRotatef(z_angle, 0, 0, 1); // z축 기준 회전 
 	glTranslatef(0.25, 0.0, 0); // 이동
 	drawCuboid(0.5, 0.2, 0.2);
-	drawAxis();
+	// drawAxis();
 }
 
 void drawUpperLeftArm(GLfloat z_angle, GLfloat y_angle)
@@ -131,7 +131,6 @@ void drawUpperRightLeg(GLfloat z_angle, GLfloat x_angle)
 	glRotatef(z_angle, 0, 0, 1); // z축 기준 회전 
 	glTranslatef(0.25, 0.0, 0); // 오른쪽 x 좌표로 0.25만큼 이동
 	drawCuboid(0.7, 0.2, 0.2);
-	// drawAxis();
 }
 
 void drawUpperLeftLeg(GLfloat z_angle, GLfloat x_angle)
@@ -142,7 +141,6 @@ void drawUpperLeftLeg(GLfloat z_angle, GLfloat x_angle)
 	glRotatef(z_angle, 0, 0, 1); // z축 기준 회전 
 	glTranslatef(-0.25, 0.0, 0); // 이동
 	drawCuboid(0.7, 0.2, 0.2);
-	// drawAxis();
 }
 
 // 회전할 각도 지정 

@@ -26,6 +26,8 @@ struct Robot
 	int dir_leg_left_upper = 1;
 	int dir_leg_right_upper = 1;
 	int dir_low = 4;
+
+	bool robot_anim_on = true;
 };
 
 void drawAxis();
