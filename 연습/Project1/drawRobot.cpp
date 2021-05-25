@@ -60,7 +60,7 @@ void drawCuboid(GLfloat sx, GLfloat sy, GLfloat sz)
 	glPopMatrix();
 }
 
-void drawUpperRightArm(GLfloat angle)
+void drawUpperRightArm(GLfloat z_angle , GLfloat y_angle)
 {
 	// 이동 부분 
 	// 1) 만일, 회전없이 그냥 몸통 사각형 오른쪽 위에 붙일 때 
@@ -70,15 +70,17 @@ void drawUpperRightArm(GLfloat angle)
 
 	// 2) 회전을 시키고자 할때
 	glTranslatef(0.25, 0.2, 0); // 이동 
-	glRotatef(angle, 0, 0, 1); // z축 기준 회전 
+	glRotatef(y_angle, 0, 1, 0); // y축 기준 회전 
+	glRotatef(z_angle, 0, 0, 1); // z축 기준 회전 
 	glTranslatef(0.25, 0.0, 0); // 이동
 	drawCuboid(0.5, 0.2, 0.2);
 }
 
-void drawUpperLeftArm(GLfloat angle)
+void drawUpperLeftArm(GLfloat z_angle, GLfloat y_angle)
 {
 	glTranslatef(-0.25, 0.2, 0); // 이동 
-	glRotatef(angle, 0, 0, 1); // z축 기준 회전 
+	glRotatef(y_angle, 0, 1, 0); // y축 기준 회전 
+	glRotatef(z_angle, 0, 0, 1); // z축 기준 회전 
 	glTranslatef(-0.25, 0.0, 0); // 이동
 	drawCuboid(0.5, 0.2, 0.2);
 }
@@ -88,7 +90,7 @@ void drawLowerRightArm(GLfloat angle)
 {
 	// drawAxis();
 	glTranslatef(0.25, 0.0, 0); // 이동 
-	glRotatef(angle, 0, 0, 1); // z축 기준 회전 
+	glRotatef(angle, 0, 1, 0); // y축 기준 회전 
 	glTranslatef(0.25, 0.0, 0); // 이동
 	// drawAxis();
 	drawCuboid(0.5, 0.2, 0.2);
@@ -97,7 +99,7 @@ void drawLowerLeftArm(GLfloat angle)
 {
 	// drawAxis();
 	glTranslatef(-0.25, 0.0, 0); // 이동 
-	glRotatef(angle, 0, 0, 1); // z축 기준 회전 
+	glRotatef(angle, 0, 1, 0); // y축 기준 회전 
 	glTranslatef(-0.25, 0.0, 0); // 이동
 	// drawAxis();
 	drawCuboid(0.5, 0.2, 0.2);
