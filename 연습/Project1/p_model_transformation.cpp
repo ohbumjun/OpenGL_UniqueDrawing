@@ -97,7 +97,6 @@ void drawCuboid(GLfloat sx, GLfloat sy, GLfloat sz)
 		glScalef(sx, sy, sz);
 		glutWireCube(1);
 	glPopMatrix();
-	
 }
 
 void drawUpperArm(GLfloat angle)
