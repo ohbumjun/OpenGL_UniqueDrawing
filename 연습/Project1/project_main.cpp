@@ -69,7 +69,6 @@ void clock_timer(int value);
 void robot_timer(int value);
 
 
-
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
@@ -738,7 +737,7 @@ void selectSubMenu(int value) {
 	else if (value == 3)
 	{
 		displayMode = displayModes::THREE_D;
-		cam_pos.camx = 1, cam_pos.camy = 1; cam_pos.camz = 4;
+		cam_pos.camx = 0.5, cam_pos.camy = 0.5; cam_pos.camz = 4;
 		glutPostRedisplay();
 	}
 }
@@ -829,11 +828,12 @@ void robot_timer(int value)
 	// y좌표는 그대로 있고 
 	// y 축 기준 돌아가면서 돌기 
 	GLfloat theta = 0.01;
+	GLfloat tmp_x = cam_pos.camx; // 기존에 있던 x 좌표 그대로 
 	cam_pos.camx = cam_pos.camx * cos(theta) + cam_pos.camz * sin(theta);
-	cam_pos.camz = -cam_pos.camx * sin(theta) + cam_pos.camz * cos(theta);
+	cam_pos.camz = -tmp_x * sin(theta) + cam_pos.camz * cos(theta);
 
 	// 참고 : 카메라 변환 애니메이션은 
 	// 별도 timer func 둬도 된다 
-	glutTimerFunc(1000/60, robot_timer, 1000/60);
+	glutTimerFunc(10000, robot_timer, 10000);
 	glutPostRedisplay();
 }
