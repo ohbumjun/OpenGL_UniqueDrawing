@@ -26,8 +26,9 @@ class Clock2D {
 public :
 	float clock_rotate_angle = 0.0;
 	bool clock_anim_on = true;
-	vector3D clock_bigtick_color;
-	vector3D clock_smalltick_color;
+	vector3D clock_center = vector3D(0, 0, 0);
+	vector3D clock_bigtick_color   = vector3D(0.8,0.8,0.8);
+	vector3D clock_smalltick_color = vector3D(0.9,0.9,0.9) ;
 };
 Clock2D Clock2d;
 
@@ -146,8 +147,7 @@ void drawClock()
 	
 		// 배경 시계
 		glColor3f(1, 1, 1);
-		vector3D center = vector3D(0,0,0);
-		circle(center, radius);
+		circle(Clock2d.clock_center, radius);
 
 		// 12시
 		glColor3f(0, 0, 0);
@@ -172,14 +172,23 @@ void drawClock()
 			vector3D small_end = vector3D(0, radius * 0.3, 0);
 			glLineWidth(10);
 			glRotatef(-Clock2d.clock_rotate_angle, 0, 0, 1);
-			glColor3f(0.8, 0.8, 0.8);
+
+			glColor3f(
+				Clock2d.clock_smalltick_color[0],
+				Clock2d.clock_smalltick_color[1],
+				Clock2d.clock_smalltick_color[2]
+			);
 			line(0, small_end);
 			glLineWidth(1);
 		
 			vector3D big_end = vector3D(0, radius * 0.6, 0);
 			glLineWidth(10);
 			glRotatef(-Clock2d.clock_rotate_angle*1.1, 0, 0, 1);
-			glColor3f(0.9, 0.9, 0.9);
+			glColor3f(
+				Clock2d.clock_bigtick_color[0],
+				Clock2d.clock_bigtick_color[1],
+				Clock2d.clock_bigtick_color[2]
+			);
 			line(0, big_end);
 			glLineWidth(1);
 			glRotatef(0, 0, 0, 1);
@@ -359,50 +368,99 @@ void mykey(unsigned char key, int x, int y)
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::THREE_WAY_LINE;
 		break;
 	case 'r':
-		if (drawMode == drawModes::DRAW_OBJECT) color = vector3D(1.0, 0.0, 0.0);
-		else if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
+		if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::DRAW_OBJECT) 
+			color = vector3D(1.0, 0.0, 0.0);
+		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(1.0, 0.0, 0.0);
 			glutPostRedisplay();
 		}
+		else if (displayMode == displayModes::TWO_D)
+		{
+			Clock2d.clock_bigtick_color = vector3D(1.0, 0.0, 0.0);
+			Clock2d.clock_smalltick_color = vector3D(0.8, 0.0, 0.0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'y':
-		if (drawMode == drawModes::DRAW_OBJECT) color = vector3D(1.0, 1.0, 0.0);
-		else if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
+		if (displayMode == displayModes::SIMPLE_DRAWING &&  
+			drawMode == drawModes::DRAW_OBJECT) color = vector3D(1.0, 1.0, 0.0);
+		else if (displayMode == displayModes::SIMPLE_DRAWING &&  
+			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(1.0, 1.0, 0.0);
 			glutPostRedisplay();
 		}
+		else if (displayMode == displayModes::TWO_D)
+		{
+			Clock2d.clock_bigtick_color = vector3D(1.0, 1.0, 0.0);
+			Clock2d.clock_smalltick_color = vector3D(0.8, 0.8, 0.0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'b':
-		if (drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 0.0, 1.0);
-		else if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
+		if (displayMode == displayModes::SIMPLE_DRAWING &&  
+			drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 0.0, 1.0);
+		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(0.0, 0.0, 1.0);
 			glutPostRedisplay();
 		}
+		else if (displayMode == displayModes::TWO_D)
+		{
+			Clock2d.clock_bigtick_color = vector3D(0.0, 0.0, 1.0);
+			Clock2d.clock_smalltick_color = vector3D(0.0, 0.0, 0.8);
+			glutPostRedisplay();
+		}
 		break;
 	case 'g':
-		if (drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 1.0, 0.0);
-		else if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
+		if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 1.0, 0.0);
+		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(0.0, 1.0, 0.0);
 			glutPostRedisplay();
 		}
+		else if (displayMode == displayModes::TWO_D)
+		{
+			Clock2d.clock_bigtick_color = vector3D(0.0, 1.0, 0.0);
+			Clock2d.clock_smalltick_color = vector3D(0.0, 0.8, 0.0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'c':
-		if (drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 1.0, 1.0);
-		else if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
+		if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 1.0, 1.0);
+		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(0.0, 1.0, 1.0);
 			glutPostRedisplay();
 		}
+		else if (displayMode == displayModes::TWO_D)
+		{
+			Clock2d.clock_bigtick_color = vector3D(1.0, 0.0, 0.0);
+			Clock2d.clock_smalltick_color = vector3D(0.8, 0.0, 0.0);
+			glutPostRedisplay();
+		}
 		break;
 	case 'm':
-		if (drawMode == drawModes::DRAW_OBJECT) color = vector3D(1.0, 0.0, 1.0);
-		else if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
+		if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::DRAW_OBJECT) color = vector3D(1.0, 0.0, 1.0);
+		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(1.0, 0.0, 1.0);
+			glutPostRedisplay();
+		}
+		else if (displayMode == displayModes::TWO_D)
+		{
+			Clock2d.clock_bigtick_color = vector3D(1.0, 0.0, 1.0);
+			Clock2d.clock_smalltick_color = vector3D(1.0, 0.0, 0.8);
 			glutPostRedisplay();
 		}
 		break;
