@@ -22,6 +22,15 @@ polytype polygon[100];
 int clickedFigIdx = -1 ;
 int index = 0; // 몇번째 polygon 을 그리고 있는가 
 
+class Clock2D {
+public :
+	float clock_rotate_angle = 0.0;
+	bool clock_anim_on = true;
+	vector3D clock_bigtick_color;
+	vector3D clock_smalltick_color;
+};
+Clock2D Clock2d;
+
 enum class displayModes {SIMPLE_DRAWING = 1, TWO_D, THREE_D};
 displayModes displayMode = displayModes::SIMPLE_DRAWING;
 enum class colorModes {RED = 1, YELLOW, BLUE, GREEN, CYAN, MATAGATA};
@@ -74,7 +83,6 @@ bool checkFigure(float x, float y)
 	cout << "clickedFigIdx : " << clickedFigIdx << endl;
 	return isFigClicked;
 }
-
 
 int main(int argc, char** argv)
 {
@@ -133,9 +141,9 @@ int main(int argc, char** argv)
 
 void drawClock()
 {
-	// glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	float radius = 0.3;
-	glPushMatrix();
+	
 		// 배경 시계
 		glColor3f(1, 1, 1);
 		vector3D center = vector3D(0,0,0);
@@ -162,17 +170,32 @@ void drawClock()
 		// 2개 축 세팅 
 		glPushMatrix();
 			vector3D small_end = vector3D(0, radius * 0.3, 0);
-			vector3D big_end = vector3D(0, radius * 0.6, 0);
 			glLineWidth(10);
+			glRotatef(-Clock2d.clock_rotate_angle, 0, 0, 1);
 			glColor3f(0.8, 0.8, 0.8);
 			line(0, small_end);
+			glLineWidth(1);
+		
+			vector3D big_end = vector3D(0, radius * 0.6, 0);
+			glLineWidth(10);
+			glRotatef(-Clock2d.clock_rotate_angle*1.1, 0, 0, 1);
 			glColor3f(0.9, 0.9, 0.9);
-			glRotatef(-30, 0, 0, 1);
 			line(0, big_end);
+			glLineWidth(1);
+			glRotatef(0, 0, 0, 1);
 		glPopMatrix();
-
-	glPopMatrix();
+		
+		// cout << "clock rotate angle" << clock_rotate_angle << endl;
+	
 }
+
+void clock_timer(int value)
+{
+	if (Clock2d.clock_anim_on) Clock2d.clock_rotate_angle += 0.04;
+	glutTimerFunc(10000, clock_timer, 10000);
+	glutPostRedisplay();
+}
+
 
 void drawSimpleDrawing(vector3D a, vector3D b, vector3D color)
 {
@@ -271,7 +294,10 @@ void display()
 	if (displayMode == displayModes::SIMPLE_DRAWING)
 		drawSimpleDrawing(a,b,color);
 	if (displayMode == displayModes::TWO_D)
+	{
 		drawClock();
+		glutTimerFunc(20,clock_timer,1);
+	}
 
 	
 	glutSwapBuffers();
@@ -414,6 +440,10 @@ void mykey(unsigned char key, int x, int y)
 			drawMode = drawModes::RESIZE_OBJECT; 
 		}
 		break;
+	case 'q' :
+		// 2d : clock animation on, off 기능
+		if (displayMode == displayModes::TWO_D)
+			Clock2d.clock_anim_on = !Clock2d.clock_anim_on;
 	case 'w':
 		// draw mode에 있고 + 선택한 도형이 존재한다면, 위로 이동 
 		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1) {
