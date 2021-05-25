@@ -334,10 +334,59 @@ void mykey(unsigned char key, int x, int y)
 			glutPostRedisplay();
 		}
 		break;
-	case 'd': drawMode = drawModes::DRAW_OBJECT; break;
-	case 'e': drawMode = drawModes::EDIT_OBJECT; break;
-	case 's': drawMode = drawModes::RESIZE_OBJECT; break;
-	case 127:
+	case 'd': 
+		// draw mode에 있고 + 선택한 도형이 존재한다면, 오른쪽으로 이동 
+		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1) {
+			cout << "right move" << endl;
+			polygon[clickedFigIdx].a.x += 0.005;
+			polygon[clickedFigIdx].b.x += 0.005;
+			glutPostRedisplay();
+		}
+		// 그외 : drawMode로 바꾸기 
+		else
+		{
+			cout << "mode changed to draw mode" << endl;
+			drawMode = drawModes::DRAW_OBJECT; 
+		}
+		break;
+	case 'e': 
+		drawMode = drawModes::EDIT_OBJECT; 
+		cout << "mode changed to edit mode" << endl;
+		break;
+	case 's': 
+		// draw mode에 있고 + 선택한 도형이 존재한다면, 아래로 이동 
+		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1) {
+			cout << "down move" << endl;
+			polygon[clickedFigIdx].a.y -= 0.005;
+			polygon[clickedFigIdx].b.y -= 0.005;
+			glutPostRedisplay();
+		}
+		// 그외 : drawMode로 바꾸기 
+		else
+		{
+			cout << "mode changed to resize mode" << endl;
+			drawMode = drawModes::RESIZE_OBJECT; 
+		}
+		break;
+	case 'w':
+		// draw mode에 있고 + 선택한 도형이 존재한다면, 위로 이동 
+		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1) {
+			cout << "up move" << endl;
+			polygon[clickedFigIdx].a.y += 0.005;
+			polygon[clickedFigIdx].b.y += 0.005;
+			glutPostRedisplay();
+		}
+		break;
+	case 'a':
+		// draw mode에 있고 + 선택한 도형이 존재한다면, 왼쪽로 이동 
+		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1) {
+			cout << "left move" << endl;
+			polygon[clickedFigIdx].a.x -= 0.005;
+			polygon[clickedFigIdx].b.x -= 0.005;
+			glutPostRedisplay();
+		}
+		break;
+	case 46:
 		std::cout << "delete btn clicked" << std::endl;
 		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1) {
 			// 해당 idx 부터 시작하여, array idx + 1을 앞으로 끌어당긴다
@@ -353,33 +402,16 @@ void mykey(unsigned char key, int x, int y)
 			glutPostRedisplay();
 		}
 		break;
-	case 'o': 
+	case 'o':
 		cout << "zoom out" << endl;
-		// 선택한 도형 축소 
-		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
-		{
-			// 해당 도형의 z 축 조정 하기 
-		}
-		// 전반적 camera zoom out
-		else
-		{
-			cam_pos.camz += 0.01;
-			glutPostRedisplay();
-		}
+		
+		cam_pos.camz += 0.01;
+		glutPostRedisplay();
 		break;
-	case 'i': 
+	case 'i':
 		cout << "zoom in" << endl;
-		// 선택한 도형 축소 
-		if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
-		{
-			// 해당 도형의 z 축 조정 하기 
-		}
-		// 전반적 camera zoom in
-		else
-		{
-			cam_pos.camz -= 0.01;
-			glutPostRedisplay();
-		}
+		cam_pos.camz -= 0.01;
+		glutPostRedisplay();
 		break;
 	default :
 		break;
