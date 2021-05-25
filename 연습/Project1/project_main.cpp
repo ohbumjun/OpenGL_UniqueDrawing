@@ -271,19 +271,19 @@ void mykey(unsigned char key, int x, int y)
 	case '2' :
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::RENTANGLE;
 		break;
-	case 3:
+	case '3':
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::TRIANGLE;
 		break;
-	case 4:
+	case '4':
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::ELLIPSE;
 		break;
-	case 5:
+	case '5':
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::SPHERE;
 		break;
-	case 6:
+	case '6':
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::BIG_ARROW;
 		break;
-	case 7:
+	case '7':
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::THREE_WAY_LINE;
 		break;
 	case 'r':
