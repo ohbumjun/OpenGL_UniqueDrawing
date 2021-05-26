@@ -47,7 +47,7 @@ struct Campos {
 	// cam : 어디서 보느냐
 	// ex) 0.5, -0.5 ,1 : 밑에서 위를 보기 
 	// ex) 0.0, -0.0 ,5 : 맨 위에서 아래를 내려다 보기
-	GLfloat camx = 0.0, camy = -0.0, camz = 1;
+	GLfloat camx = 0.0, camy = -0.0, camz = 2;
 	// center : 어디를 보느냐 
 	GLfloat cam2x = 0, cam2y = 0, cam2z = 0;// 원점 바라봄
 	// cam_up : 어디가 위쪽이냐
@@ -487,12 +487,6 @@ void mykey(unsigned char key, int x, int y)
 			polygon[clickedFigIdx].b.x += 0.005;
 			glutPostRedisplay();
 		}
-		// 2d clock 이동 시키기
-		else if (displayMode == displayModes::TWO_D)
-		{
-			Clock2d.clock_center.x += 0.005;
-			glutPostRedisplay();
-		}
 		// 그외 : drawMode로 바꾸기 
 		else
 		{
@@ -504,6 +498,14 @@ void mykey(unsigned char key, int x, int y)
 		drawMode = drawModes::EDIT_OBJECT; 
 		cout << "mode changed to edit mode" << endl;
 		break;
+	case 'f' :
+		// 3d robot animation faster
+		if (displayMode == displayModes::THREE_D ) {
+			cout << "animation faster" << endl;
+			robot.robot_anim_speed += 2;
+			glutPostRedisplay();
+		}
+		break;
 	case 's': 
 		// draw mode에 있고 + 선택한 도형이 존재한다면, 아래로 이동 
 		if (displayMode == displayModes::SIMPLE_DRAWING && 
@@ -514,10 +516,10 @@ void mykey(unsigned char key, int x, int y)
 			polygon[clickedFigIdx].b.y -= 0.005;
 			glutPostRedisplay();
 		}
-		// 2d clock 이동 시키기
-		else if (displayMode == displayModes::TWO_D)
-		{
-			Clock2d.clock_center.y -= 0.005;
+		// 3d robot animation slower
+		if (displayMode == displayModes::THREE_D) {
+			cout << "animation faster" << endl;
+			robot.robot_anim_speed -= 2;
 			glutPostRedisplay();
 		}
 		// 그외 : drawMode로 바꾸기 
@@ -544,12 +546,6 @@ void mykey(unsigned char key, int x, int y)
 			polygon[clickedFigIdx].b.y += 0.005;
 			glutPostRedisplay();
 		}
-		// 2d clock 이동 시키기
-		else if (displayMode == displayModes::TWO_D)
-		{
-			Clock2d.clock_center.y += 0.005;
-			glutPostRedisplay();
-		}
 		break;
 	case 'a':
 		// draw mode에 있고 + 선택한 도형이 존재한다면, 왼쪽로 이동 
@@ -559,12 +555,6 @@ void mykey(unsigned char key, int x, int y)
 			cout << "left move" << endl;
 			polygon[clickedFigIdx].a.x -= 0.005;
 			polygon[clickedFigIdx].b.x -= 0.005;
-			glutPostRedisplay();
-		}
-		// 2d clock 이동 시키기
-		else if (displayMode == displayModes::TWO_D)
-		{
-			Clock2d.clock_center.x -= 0.005;
 			glutPostRedisplay();
 		}
 		break;
@@ -723,8 +713,8 @@ void mymousemotion(int x, int y)
 	// 해당 도형 이동 및 사이즈 조정
 	else if (drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 	{
-		cout << "abs(polygon[clickedFigIdx].a.x - polygon[clickedFigIdx].sp.x ) : " << abs(polygon[clickedFigIdx].a.x - polygon[clickedFigIdx].sp.x) << endl;
-		cout << "abs(polygon[clickedFigIdx].a.y - polygon[clickedFigIdx].sp.y ) : " << abs(polygon[clickedFigIdx].a.y - polygon[clickedFigIdx].sp.y) << endl;
+		// cout << "abs(polygon[clickedFigIdx].a.x - polygon[clickedFigIdx].sp.x ) : " << abs(polygon[clickedFigIdx].a.x - polygon[clickedFigIdx].sp.x) << endl;
+		// cout << "abs(polygon[clickedFigIdx].a.y - polygon[clickedFigIdx].sp.y ) : " << abs(polygon[clickedFigIdx].a.y - polygon[clickedFigIdx].sp.y) << endl;
 
 		polygon[clickedFigIdx].a = vector3D(polygon[clickedFigIdx].a.x + (px - polygon[clickedFigIdx].sp.x),
 			polygon[clickedFigIdx].a.y + (py - polygon[clickedFigIdx].sp.y),
@@ -784,7 +774,7 @@ void selectSubMenu(int value) {
 	// 2d
 	if (value == 2)
 	{
-		cam_pos.camx = 0, cam_pos.camy = 0, cam_pos.camz = 1;
+		cam_pos.camx = 0, cam_pos.camy = 0, cam_pos.camz = 2;
 		displayMode = displayModes::TWO_D;
 		glutPostRedisplay();
 	}
@@ -793,7 +783,7 @@ void selectDrawMenu(int value) {
 	//enum drawModes { DRAW_OBJECT = 1, EDIT_OBJECT, RESIZE_OBJECT };
 	if (displayMode != displayModes::SIMPLE_DRAWING)
 	{
-		cam_pos.camx = 0, cam_pos.camy = 0, cam_pos.camz = 1;
+		cam_pos.camx = 0, cam_pos.camy = 0, cam_pos.camz = 2;
 		displayMode = displayModes::SIMPLE_DRAWING;
 		glutPostRedisplay();
 	}
@@ -824,7 +814,7 @@ void selectFigMenu(int value) {
 	// 도형 모양 선택하기 
 	if (displayMode != displayModes::SIMPLE_DRAWING)
 	{
-		cam_pos.camx = 0, cam_pos.camy = 0, cam_pos.camz = 1;
+		cam_pos.camx = 0, cam_pos.camy = 0, cam_pos.camz = 2;
 		displayMode = displayModes::SIMPLE_DRAWING;
 		glutPostRedisplay();
 	}
@@ -862,6 +852,7 @@ bool checkFigure(float x, float y)
 
 void my_timer(int value)
 {
+	int timer = displayMode == displayModes::THREE_D ? robot.robot_anim_speed : 60;
 	if (displayMode == displayModes::TWO_D)
 	{
 		if (Clock2d.clock_anim_on) Clock2d.clock_rotate_angle += 0.1;
@@ -912,6 +903,6 @@ void my_timer(int value)
 		// 참고 : 카메라 변환 애니메이션은 
 		// 별도 timer func 둬도 된다 
 	}
-	glutTimerFunc(1000/60, my_timer, 1);
+	glutTimerFunc(1000/timer, my_timer, 1);
 	glutPostRedisplay();
 }

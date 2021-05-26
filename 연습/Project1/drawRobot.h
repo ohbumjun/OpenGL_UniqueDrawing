@@ -31,6 +31,7 @@ struct Robot
 	int dir_low = 4;
 
 	bool robot_anim_on = true;
+	int  robot_anim_speed = 60;
 	vector3D robot_color = vector3D(1, 1, 1);
 };
 
