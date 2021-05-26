@@ -13,7 +13,7 @@ using namespace std;
 #define _WINDOW_HEIGHT 1024
 
 struct polytype {
-	vector3D a, b ; // 시작 위치, 끝 위치 
+	vector3D a, b; // 시작 위치, 끝 위치 
 	vector3D sp, cp; // 마우스 드래그 시 시작, 드래그 중 위치 
 	int pmode;// 1: line, 2: triangle, 3:circle, 4:rectangle -> 도형을 더 추가할 수도 있다 
 	vector3D color;
@@ -21,22 +21,22 @@ struct polytype {
 };
 polytype polygon[100];
 
-int clickedFigIdx = -1 ;
+int clickedFigIdx = -1;
 int index = 0; // 몇번째 polygon 을 그리고 있는가 
 
 Clock2D Clock2d;
 
 enum class robotStates { CHASE = 1, WALK, RUN_AWAY };
 robotStates robotState = robotStates::CHASE;
-enum class displayModes {SIMPLE_DRAWING = 1, TWO_D, THREE_D};
+enum class displayModes { SIMPLE_DRAWING = 1, TWO_D, THREE_D };
 displayModes displayMode = displayModes::SIMPLE_DRAWING;
-enum class colorModes {RED = 1, YELLOW, BLUE, GREEN, CYAN, MATAGATA};
+enum class colorModes { RED = 1, YELLOW, BLUE, GREEN, CYAN, MATAGATA };
 colorModes colorMode = colorModes::RED;
-enum class figureModes { LINE = 1, RENTANGLE,TRIANGLE, ELLIPSE, SPHERE, BIG_ARROW, THREE_WAY_LINE };
+enum class figureModes { LINE = 1, RENTANGLE, TRIANGLE, ELLIPSE, SPHERE, BIG_ARROW, THREE_WAY_LINE };
 figureModes figureMode = figureModes::LINE;
 enum class drawModes { DRAW_OBJECT = 1, EDIT_OBJECT, RESIZE_OBJECT };
 drawModes drawMode = drawModes::DRAW_OBJECT; // 0 : 그리기, 1 : 편집 
-enum class resizeDirs {LEFT_TOP = 1,LEFT_BOTTOM,RIGHT_TOP,RIGHT_BOTTOM};
+enum class resizeDirs { LEFT_TOP = 1, LEFT_BOTTOM, RIGHT_TOP, RIGHT_BOTTOM };
 resizeDirs resizeDir = resizeDirs::LEFT_TOP;
 vector3D color = vector3D(0.9, 0.9, 0.8);
 
@@ -87,70 +87,71 @@ int main(int argc, char** argv)
 	glutTimerFunc(20, my_timer, 1);
 
 	int drawMenuId = glutCreateMenu(selectDrawMenu);
-		glutSetMenu(drawMenuId);// 현재 메뉴 지정 
-		glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
-		// 3D Model을 클릭시, 아래의 3개 subMenu가 나오는 것이다 
-		glutAddMenuEntry("Draw Mode", 1); // 메뉴에 내용 넣어주기
-		glutAddMenuEntry("Edit Mode", 2);
-		glutAddMenuEntry("Resize Mode", 3);
+	glutSetMenu(drawMenuId);// 현재 메뉴 지정 
+	glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
+	// 3D Model을 클릭시, 아래의 3개 subMenu가 나오는 것이다 
+	glutAddMenuEntry("Draw Mode", 1); // 메뉴에 내용 넣어주기
+	glutAddMenuEntry("Edit Mode", 2);
+	glutAddMenuEntry("Resize Mode", 3);
 
 	int figureMenuId = glutCreateMenu(selectFigMenu);
-		glutSetMenu(figureMenuId);// 현재 메뉴 지정 
-		glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
-		// 3D Model을 클릭시, 아래의 3개 subMenu가 나오는 것이다 
-		glutAddMenuEntry("Line", static_cast<int>(figureModes::LINE)); // 메뉴에 내용 넣어주기
-		glutAddMenuEntry("Rectangle", static_cast<int>(figureModes::RENTANGLE));
-		glutAddMenuEntry("Triangle", static_cast<int>(figureModes::TRIANGLE));
-		glutAddMenuEntry("Ellipse", static_cast<int>(figureModes::ELLIPSE));
-		glutAddMenuEntry("Sphere", static_cast<int>(figureModes::SPHERE));
-		glutAddMenuEntry("Big Arrow", static_cast<int>(figureModes::BIG_ARROW));
-		glutAddMenuEntry("3 Way Lines", static_cast<int>(figureModes::THREE_WAY_LINE));
+	glutSetMenu(figureMenuId);// 현재 메뉴 지정 
+	glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
+	// 3D Model을 클릭시, 아래의 3개 subMenu가 나오는 것이다 
+	glutAddMenuEntry("Line", static_cast<int>(figureModes::LINE)); // 메뉴에 내용 넣어주기
+	glutAddMenuEntry("Rectangle", static_cast<int>(figureModes::RENTANGLE));
+	glutAddMenuEntry("Triangle", static_cast<int>(figureModes::TRIANGLE));
+	glutAddMenuEntry("Ellipse", static_cast<int>(figureModes::ELLIPSE));
+	glutAddMenuEntry("Sphere", static_cast<int>(figureModes::SPHERE));
+	glutAddMenuEntry("Big Arrow", static_cast<int>(figureModes::BIG_ARROW));
+	glutAddMenuEntry("3 Way Lines", static_cast<int>(figureModes::THREE_WAY_LINE));
 
 	int simpleDrawMenuId = glutCreateMenu(selectSubMenu);
-		glutSetMenu(simpleDrawMenuId);// 현재 메뉴 지정 
-		glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
-		glutAddSubMenu("Draw Mode", drawMenuId); // 메뉴에 내용 넣어주기
-		glutAddSubMenu("Figure", figureMenuId);
+	glutSetMenu(simpleDrawMenuId);// 현재 메뉴 지정 
+	glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
+	glutAddSubMenu("Draw Mode", drawMenuId); // 메뉴에 내용 넣어주기
+	glutAddSubMenu("Figure", figureMenuId);
 
 	int robotMenuId = glutCreateMenu(selectRobotState);
-		glutSetMenu(robotMenuId);// 현재 메뉴 지정 
-		glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
-		glutAddMenuEntry("Chase", static_cast<int>(robotStates::CHASE)); // 메뉴에 내용 넣어주기
-		glutAddMenuEntry("Walk", static_cast<int>(robotStates::WALK));
-		glutAddMenuEntry("RunAway", static_cast<int>(robotStates::RUN_AWAY));
+	glutSetMenu(robotMenuId);// 현재 메뉴 지정 
+	glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
+	glutAddMenuEntry("Chase", static_cast<int>(robotStates::CHASE)); // 메뉴에 내용 넣어주기
+	glutAddMenuEntry("Walk", static_cast<int>(robotStates::WALK));
+	glutAddMenuEntry("RunAway", static_cast<int>(robotStates::RUN_AWAY));
 
 	int subMenuId = glutCreateMenu(selectSubMenu);
-		glutSetMenu(subMenuId);// 현재 메뉴 지정 
-		glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
-		glutAddSubMenu("Simple Drawing", simpleDrawMenuId); // 메뉴에 내용 넣어주기
-		glutAddMenuEntry("2D", 2);
-		glutAddSubMenu("3D", robotMenuId);
+	glutSetMenu(subMenuId);// 현재 메뉴 지정 
+	glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
+	glutAddSubMenu("Simple Drawing", simpleDrawMenuId); // 메뉴에 내용 넣어주기
+	glutAddMenuEntry("2D", 2);
+	glutAddSubMenu("3D", robotMenuId);
 
 	int mainMenuId = glutCreateMenu(selectMenu);
-		glutSetMenu(mainMenuId);// 현재 메뉴 지정 
-		glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
-		glutAddSubMenu("What do you want", subMenuId); // 메뉴에 내용 넣어주기
-		glutAddMenuEntry("Exit", 2);
+	glutSetMenu(mainMenuId);// 현재 메뉴 지정 
+	glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
+	glutAddSubMenu("What do you want", subMenuId); // 메뉴에 내용 넣어주기
+	glutAddMenuEntry("Exit", 2);
 
 	glutMainLoop();
 }
 
 void drawSimpleDrawing(vector3D a, vector3D b, vector3D color)
 {
+	figureModes curfigMode;
 	for (int i = 0; i <= index; i++) {
 		// .on == false : 아직 드래그가 안끝난 것 ( 아직 안그려진 것 )
 		if (polygon[i].on == true) {
 			a = polygon[i].a;
 			b = polygon[i].b;
 			color = polygon[i].color;
-			figureMode = static_cast<figureModes>(polygon[i].pmode);
+			curfigMode = static_cast<figureModes>(polygon[i].pmode);
 			glColor3f(color.x, color.y, color.z);
-			if (figureMode == figureModes::LINE)
+			if (curfigMode == figureModes::LINE)
 				line(a, b);
-			else if (figureMode == figureModes::RENTANGLE) {  //rectangle
+			else if (curfigMode == figureModes::RENTANGLE) {  //rectangle
 				rect(a, b);
 			}
-			else if (figureMode == figureModes::TRIANGLE) {
+			else if (curfigMode == figureModes::TRIANGLE) {
 				//triangle
 				vector3D lDown, mTop, rDown;
 				// x : 가로위치, y : 세로 위치 
@@ -159,19 +160,19 @@ void drawSimpleDrawing(vector3D a, vector3D b, vector3D color)
 				rDown = b;
 				triangle(mTop, lDown, rDown);
 			}
-			else if (figureMode == figureModes::ELLIPSE) {
+			else if (curfigMode == figureModes::ELLIPSE) {
 				//ellipse
 				float width = (b.x - a.x) / 2;
 				float height = (a.y - b.y) / 2;
 				vector3D center = vector3D(a.x + width / 2, b.y + height, 0);
 				ellipse(center, width, height);
 			}
-			else if (figureMode == figureModes::SPHERE) {
+			else if (curfigMode == figureModes::SPHERE) {
 				float radius = (b.x - a.x) / 2;
 				vector3D center = vector3D(a.x + radius / 2, b.y + radius, 0);
 				circle(center, radius);
 			}
-			else if (figureMode == figureModes::BIG_ARROW) {
+			else if (curfigMode == figureModes::BIG_ARROW) {
 				vector3D recLTop, recRDown;
 				recLTop = vector3D(a.x, a.y - (a.y - b.y) * 0.3, 0);
 				recRDown = vector3D(a.x + (b.x - a.x) * 0.6, b.y + (a.y - b.y) * 0.3, 0);
@@ -182,7 +183,7 @@ void drawSimpleDrawing(vector3D a, vector3D b, vector3D color)
 				lDown = vector3D(a.x + (b.x - a.x) * 0.6, b.y, 0);
 				triangle(lTop, rMid, lDown);
 			}
-			else if (figureMode == figureModes::THREE_WAY_LINE) {
+			else if (curfigMode == figureModes::THREE_WAY_LINE) {
 				vector3D fstP = a;
 				vector3D secP = vector3D(a.x, b.y + (a.y - b.y) / 2, 0);
 				vector3D trdP = vector3D(b.x, b.y + (a.y - b.y) / 2, 0);
@@ -223,12 +224,12 @@ void display()
 	glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_POLYGON_SMOOTH);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+
 	// 중앙을 나타내기 위해 점 하나 가운데에 그리기
 	glPointSize(5);
 	glBegin(GL_POINTS);
 	glBegin(GL_POINTS);
-		glutWireSphere(0.2,3,3);
+	glutWireSphere(0.2, 3, 3);
 	glEnd();
 
 	if (displayMode == displayModes::SIMPLE_DRAWING)
@@ -236,7 +237,7 @@ void display()
 		// 카메라 시점 위에서 아래 보기로 초기화 
 		drawSimpleDrawing(a, b, color);
 	}
-		
+
 	if (displayMode == displayModes::TWO_D)
 	{
 		// 카메라 시점 위에서 아래 보기로 초기화
@@ -251,7 +252,7 @@ void display()
 			robotAngIdx = 1;
 		else if (robotState == robotStates::RUN_AWAY)
 			robotAngIdx = 2;
-		glColor3f(robot.robot_color[0],robot.robot_color[1],robot.robot_color[2]);
+		glColor3f(robot.robot_color[0], robot.robot_color[1], robot.robot_color[2]);
 
 		// running : 앞으로 숙이기
 		// glRotatef(10, 1, 0, 0); // z축 기준 회전 
@@ -264,33 +265,33 @@ void display()
 
 		// 몸통
 		drawBody();
-		
+
 		// 왼쪽 팔
 		glPushMatrix();
-			drawUpperLeftArm(robot.leftarm_z_angle_upper[robotAngIdx], robot.leftarm_y_angle_upper);
-			drawLowerLeftArm(robot.leftarm_angle_low[robotAngIdx]);
-			drawLeftHand();
+		drawUpperLeftArm(robot.leftarm_z_angle_upper[robotAngIdx], robot.leftarm_y_angle_upper);
+		drawLowerLeftArm(robot.leftarm_angle_low[robotAngIdx]);
+		drawLeftHand();
 		glPopMatrix();
 
 		// 오른쪽 팔
 		glPushMatrix();
-			drawUpperRightArm(robot.rightarm_z_angle_upper[robotAngIdx], robot.rightarm_y_angle_upper);
-			drawLowerRightArm(robot.rightarm_angle_low[robotAngIdx]);
-			drawRightHand();
+		drawUpperRightArm(robot.rightarm_z_angle_upper[robotAngIdx], robot.rightarm_y_angle_upper);
+		drawLowerRightArm(robot.rightarm_angle_low[robotAngIdx]);
+		drawRightHand();
 		glPopMatrix();
 
 		// 왼쪽 다리
 		glPushMatrix();
-			drawUpperLeftLeg(robot.leftleg_z_angle_upper,robot.leftleg_x_angle_upper);
-			drawLowerLeftLeg(robot.leftleg_angle_low);
-			// drawRightHand();
+		drawUpperLeftLeg(robot.leftleg_z_angle_upper, robot.leftleg_x_angle_upper);
+		drawLowerLeftLeg(robot.leftleg_angle_low);
+		// drawRightHand();
 		glPopMatrix();
 
 		// 오른쪽 다리
 		glPushMatrix();
-			drawUpperRightLeg(robot.rightleg_z_angle_upper,robot.rightleg_x_angle_upper);
-			drawLowerRightLeg(robot.rightleg_angle_low);
-			// drawRightHand();
+		drawUpperRightLeg(robot.rightleg_z_angle_upper, robot.rightleg_x_angle_upper);
+		drawLowerRightLeg(robot.rightleg_angle_low);
+		// drawRightHand();
 		glPopMatrix();
 	}
 	glutSwapBuffers();
@@ -301,7 +302,7 @@ void reshape(int width, int height)
 {
 	GLfloat left = 0, bottom = 0;
 	// 오른쪽 상단에 위치하여 뷰포트 변환하기 
-	glViewport(0, 0, width , height );
+	glViewport(0, 0, width, height);
 	GLfloat f_w = (GLfloat)width / (GLfloat)_WINDOW_WIDTH;
 	GLfloat f_h = (GLfloat)height / (GLfloat)_WINDOW_HEIGHT;
 
@@ -328,11 +329,11 @@ void mykey(unsigned char key, int x, int y)
 	// red, yellow, blue, green, cyan, magenta
 	switch (key)
 	{
-	case '1' :
+	case '1':
 		cout << "press 1" << endl;
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::LINE;
 		break;
-	case '2' :
+	case '2':
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::RENTANGLE;
 		break;
 	case '3':
@@ -351,10 +352,10 @@ void mykey(unsigned char key, int x, int y)
 		if (drawMode == drawModes::DRAW_OBJECT) figureMode = figureModes::THREE_WAY_LINE;
 		break;
 	case 'r':
-		if (displayMode == displayModes::SIMPLE_DRAWING && 
-			drawMode == drawModes::DRAW_OBJECT) 
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
+			drawMode == drawModes::DRAW_OBJECT)
 			color = vector3D(1.0, 0.0, 0.0);
-		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+		else if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(1.0, 0.0, 0.0);
@@ -373,9 +374,9 @@ void mykey(unsigned char key, int x, int y)
 		}
 		break;
 	case 'y':
-		if (displayMode == displayModes::SIMPLE_DRAWING &&  
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::DRAW_OBJECT) color = vector3D(1.0, 1.0, 0.0);
-		else if (displayMode == displayModes::SIMPLE_DRAWING &&  
+		else if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(1.0, 1.0, 0.0);
@@ -394,9 +395,9 @@ void mykey(unsigned char key, int x, int y)
 		}
 		break;
 	case 'b':
-		if (displayMode == displayModes::SIMPLE_DRAWING &&  
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 0.0, 1.0);
-		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+		else if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(0.0, 0.0, 1.0);
@@ -415,9 +416,9 @@ void mykey(unsigned char key, int x, int y)
 		}
 		break;
 	case 'g':
-		if (displayMode == displayModes::SIMPLE_DRAWING && 
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 1.0, 0.0);
-		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+		else if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(0.0, 1.0, 0.0);
@@ -436,9 +437,9 @@ void mykey(unsigned char key, int x, int y)
 		}
 		break;
 	case 'c':
-		if (displayMode == displayModes::SIMPLE_DRAWING && 
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::DRAW_OBJECT) color = vector3D(0.0, 1.0, 1.0);
-		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+		else if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(0.0, 1.0, 1.0);
@@ -457,9 +458,9 @@ void mykey(unsigned char key, int x, int y)
 		}
 		break;
 	case 'm':
-		if (displayMode == displayModes::SIMPLE_DRAWING && 
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::DRAW_OBJECT) color = vector3D(1.0, 0.0, 1.0);
-		else if (displayMode == displayModes::SIMPLE_DRAWING && 
+		else if (displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode == drawModes::EDIT_OBJECT && clickedFigIdx != -1)
 		{
 			polygon[clickedFigIdx].color = vector3D(1.0, 0.0, 1.0);
@@ -477,10 +478,10 @@ void mykey(unsigned char key, int x, int y)
 			glutPostRedisplay();
 		}
 		break;
-	case 'd': 
+	case 'd':
 		// draw mode에 있고 + 선택한 도형이 존재한다면, 오른쪽으로 이동 
-		if (displayMode == displayModes::SIMPLE_DRAWING && 
-			drawMode == drawModes::EDIT_OBJECT 
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
+			drawMode == drawModes::EDIT_OBJECT
 			&& clickedFigIdx != -1) {
 			polygon[clickedFigIdx].a.x += 0.005;
 			polygon[clickedFigIdx].b.x += 0.005;
@@ -491,11 +492,11 @@ void mykey(unsigned char key, int x, int y)
 			drawMode != drawModes::DRAW_OBJECT)
 		{
 			cout << "mode changed to draw mode" << endl;
-			drawMode = drawModes::DRAW_OBJECT; 
+			drawMode = drawModes::DRAW_OBJECT;
 			glutPostRedisplay();
 		}*/
 		break;
-	case 'e': 
+	case 'e':
 		if ((displayMode == displayModes::SIMPLE_DRAWING &&
 			drawMode != drawModes::EDIT_OBJECT))
 		{
@@ -504,17 +505,17 @@ void mykey(unsigned char key, int x, int y)
 			glutPostRedisplay();
 		}
 		break;
-	case 'f' :
+	case 'f':
 		// 3d robot animation faster
-		if (displayMode == displayModes::THREE_D ) {
+		if (displayMode == displayModes::THREE_D) {
 			robot.robot_anim_speed += 2;
 			glutPostRedisplay();
 		}
 		break;
-	case 's': 
+	case 's':
 		// draw mode에 있고 + 선택한 도형이 존재한다면, 아래로 이동 
-		if (displayMode == displayModes::SIMPLE_DRAWING && 
-			drawMode == drawModes::EDIT_OBJECT && 
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
+			drawMode == drawModes::EDIT_OBJECT &&
 			clickedFigIdx != -1) {
 			cout << "down move" << endl;
 			polygon[clickedFigIdx].a.y -= 0.005;
@@ -531,11 +532,11 @@ void mykey(unsigned char key, int x, int y)
 			drawMode != drawModes::RESIZE_OBJECT))
 		{
 			cout << "mode changed to resize mode" << endl;
-			drawMode = drawModes::RESIZE_OBJECT; 
+			drawMode = drawModes::RESIZE_OBJECT;
 			glutPostRedisplay();
 		}*/
 		break;
-	case 'q' :
+	case 'q':
 		// 2d : clock animation on, off 기능
 		if (displayMode == displayModes::TWO_D)
 			Clock2d.clock_anim_on = !Clock2d.clock_anim_on;
@@ -544,8 +545,8 @@ void mykey(unsigned char key, int x, int y)
 		break;
 	case 'w':
 		// draw mode에 있고 + 선택한 도형이 존재한다면, 위로 이동 
-		if (displayMode == displayModes::SIMPLE_DRAWING && 
-			drawMode == drawModes::EDIT_OBJECT && 
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
+			drawMode == drawModes::EDIT_OBJECT &&
 			clickedFigIdx != -1) {
 			cout << "up move" << endl;
 			polygon[clickedFigIdx].a.y += 0.005;
@@ -555,8 +556,8 @@ void mykey(unsigned char key, int x, int y)
 		break;
 	case 'a':
 		// draw mode에 있고 + 선택한 도형이 존재한다면, 왼쪽로 이동 
-		if (displayMode == displayModes::SIMPLE_DRAWING && 
-			drawMode == drawModes::EDIT_OBJECT && 
+		if (displayMode == displayModes::SIMPLE_DRAWING &&
+			drawMode == drawModes::EDIT_OBJECT &&
 			clickedFigIdx != -1) {
 			cout << "left move" << endl;
 			polygon[clickedFigIdx].a.x -= 0.005;
@@ -582,24 +583,24 @@ void mykey(unsigned char key, int x, int y)
 		break;
 	case 'o':
 		cout << "zoom out" << endl;
-		if( cam_pos.camz < 10 ) 
+		if (cam_pos.camz < 10)
 			cam_pos.camz += 0.01;
 		glutPostRedisplay();
 		break;
 	case 'i':
 		cout << "zoom in" << endl;
-		if(cam_pos.camz >= 0.5)
+		if (cam_pos.camz >= 0.5)
 			cam_pos.camz -= 0.01;
 		glutPostRedisplay();
 		break;
-	default :
+	default:
 		break;
 	}
 }
 
 void checkResizeDir(float mouse_x, float mouse_y, vector3D fig_a, vector3D fig_b)
 {
-	float fig_width  = abs(fig_b.x - fig_a.x);
+	float fig_width = abs(fig_b.x - fig_a.x);
 	float fig_height = abs(fig_a.y - fig_b.y);
 	float ratio = 0.1;
 	// 왼쪽 상단 
@@ -713,7 +714,7 @@ void mymouse(int button, int state, int x, int y)
 		// 그리기 모드
 		if (drawMode == drawModes::DRAW_OBJECT)
 		{
-			polygon[index].a = vector3D(px, py,0);
+			polygon[index].a = vector3D(px, py, 0);
 			// 키보드 입력으로, color, mode를 받기는 하지만
 			// 키보드 입력을 아무것도 안했을 때 !!! default setting을 해주는 ㅓㄱㅅ이다
 			polygon[index].color = color;
@@ -740,7 +741,7 @@ void mymousemotion(int x, int y)
 	py = -(float)y / (float)_WINDOW_HEIGHT * 2.0 + 1.0;
 	if (drawMode == drawModes::DRAW_OBJECT)
 	{
-		polygon[index].b = vector3D(px, py,0); // b 에다가 넣고
+		polygon[index].b = vector3D(px, py, 0); // b 에다가 넣고
 		polygon[index].on = true; // 드래그 및 움직임이 있었으므로 true로 세팅
 		glutPostRedisplay();
 	}
@@ -756,7 +757,7 @@ void mymousemotion(int x, int y)
 		polygon[clickedFigIdx].b = vector3D(polygon[clickedFigIdx].b.x + (px - polygon[clickedFigIdx].sp.x),
 			polygon[clickedFigIdx].b.y + (py - polygon[clickedFigIdx].sp.y),
 			0); // b 에다가 넣고
-		
+
 		polygon[clickedFigIdx].sp.x = px, polygon[clickedFigIdx].sp.y = py; // start position update
 		polygon[clickedFigIdx].on = true; // 드래그 및 움직임이 있었으므로 true로 세팅
 		glutPostRedisplay();
@@ -819,7 +820,7 @@ void selectDrawMenu(int value) {
 	{
 		cam_pos.camx = 0, cam_pos.camy = 0, cam_pos.camz = 2;
 		displayMode = displayModes::SIMPLE_DRAWING;
-		
+
 	}
 	if (value == 1)
 		drawMode = drawModes::DRAW_OBJECT;
@@ -896,7 +897,7 @@ void my_timer(int value)
 	{
 		// 팔 
 		int arm_limit = 45;
-		if(robot.robot_anim_on)
+		if (robot.robot_anim_on)
 			robot.rightarm_y_angle_upper += robot.dir_arm_right_upper;
 		// angle_low += dir_low;
 		if (robot.rightarm_y_angle_upper >= arm_limit)
@@ -938,6 +939,6 @@ void my_timer(int value)
 		// 참고 : 카메라 변환 애니메이션은 
 		// 별도 timer func 둬도 된다 
 	}
-	glutTimerFunc(1000/timer, my_timer, 1);
+	glutTimerFunc(1000 / timer, my_timer, 1);
 	glutPostRedisplay();
 }
