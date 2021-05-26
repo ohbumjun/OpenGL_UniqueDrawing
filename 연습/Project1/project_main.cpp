@@ -26,6 +26,8 @@ int index = 0; // 몇번째 polygon 을 그리고 있는가
 
 Clock2D Clock2d;
 
+enum class robotStates { CHASE = 1, WALK, RUN_AWAY };
+robotStates robotState = robotStates::CHASE;
 enum class displayModes {SIMPLE_DRAWING = 1, TWO_D, THREE_D};
 displayModes displayMode = displayModes::SIMPLE_DRAWING;
 enum class colorModes {RED = 1, YELLOW, BLUE, GREEN, CYAN, MATAGATA};
@@ -66,6 +68,7 @@ void selectDrawMenu(int value);
 void selectFigMenu(int value);
 void display();
 void my_timer(int value);
+void selectRobotState(int value);
 
 
 int main(int argc, char** argv)
@@ -109,12 +112,19 @@ int main(int argc, char** argv)
 		glutAddSubMenu("Draw Mode", drawMenuId); // 메뉴에 내용 넣어주기
 		glutAddSubMenu("Figure", figureMenuId);
 
+	int robotMenuId = glutCreateMenu(selectRobotState);
+		glutSetMenu(robotMenuId);// 현재 메뉴 지정 
+		glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
+		glutAddMenuEntry("Chase", static_cast<int>(robotStates::CHASE)); // 메뉴에 내용 넣어주기
+		glutAddMenuEntry("Walk", static_cast<int>(robotStates::WALK));
+		glutAddMenuEntry("RunAway", static_cast<int>(robotStates::RUN_AWAY));
+
 	int subMenuId = glutCreateMenu(selectSubMenu);
 		glutSetMenu(subMenuId);// 현재 메뉴 지정 
 		glutAttachMenu(GLUT_RIGHT_BUTTON);// menu 를 마우스 버튼에 등록
 		glutAddSubMenu("Simple Drawing", simpleDrawMenuId); // 메뉴에 내용 넣어주기
 		glutAddMenuEntry("2D", 2);
-		glutAddMenuEntry("3D", 3);
+		glutAddSubMenu("3D", robotMenuId);
 
 	int mainMenuId = glutCreateMenu(selectMenu);
 		glutSetMenu(mainMenuId);// 현재 메뉴 지정 
@@ -234,10 +244,20 @@ void display()
 	}
 	if (displayMode == displayModes::THREE_D)
 	{
+		int robotAngIdx;
+		if (robotState == robotStates::CHASE)
+			robotAngIdx = 0;
+		else if (robotState == robotStates::WALK)
+			robotAngIdx = 1;
+		else if (robotState == robotStates::RUN_AWAY)
+			robotAngIdx = 2;
 		glColor3f(robot.robot_color[0],robot.robot_color[1],robot.robot_color[2]);
 
-		// 앞으로 숙이기
-		glRotatef(10, 1, 0, 0); // z축 기준 회전 
+		// running : 앞으로 숙이기
+		// glRotatef(10, 1, 0, 0); // z축 기준 회전 
+
+		// 뒤로 젖히기
+		glRotatef(robot.body_angle[robotAngIdx], 1, 0, 0); // z축 기준 회전 
 
 		// 머리
 		drawHead();
@@ -247,15 +267,15 @@ void display()
 		
 		// 왼쪽 팔
 		glPushMatrix();
-			drawUpperLeftArm(robot.leftarm_z_angle_upper , robot.leftarm_y_angle_upper);
-			drawLowerLeftArm(robot.leftarm_angle_low);
+			drawUpperLeftArm(robot.leftarm_z_angle_upper[robotAngIdx], robot.leftarm_y_angle_upper);
+			drawLowerLeftArm(robot.leftarm_angle_low[robotAngIdx]);
 			drawLeftHand();
 		glPopMatrix();
 
 		// 오른쪽 팔
 		glPushMatrix();
-			drawUpperRightArm(robot.rightarm_z_angle_upper, robot.rightarm_y_angle_upper);
-			drawLowerRightArm(robot.rightarm_angle_low);
+			drawUpperRightArm(robot.rightarm_z_angle_upper[robotAngIdx], robot.rightarm_y_angle_upper);
+			drawLowerRightArm(robot.rightarm_angle_low[robotAngIdx]);
 			drawRightHand();
 		glPopMatrix();
 
@@ -768,13 +788,6 @@ void selectSubMenu(int value) {
 		displayMode = displayModes::TWO_D;
 		glutPostRedisplay();
 	}
-	// 3d
-	else if (value == 3)
-	{
-		displayMode = displayModes::THREE_D;
-		cam_pos.camx = 0.5, cam_pos.camy = 0.5; cam_pos.camz = 4;
-		glutPostRedisplay();
-	}
 }
 void selectDrawMenu(int value) {
 	//enum drawModes { DRAW_OBJECT = 1, EDIT_OBJECT, RESIZE_OBJECT };
@@ -791,6 +804,22 @@ void selectDrawMenu(int value) {
 	else if (value == 3)
 		drawMode = drawModes::RESIZE_OBJECT;
 }
+
+void selectRobotState(int value)
+{
+	displayMode = displayModes::THREE_D;
+	cam_pos.camx = 0.5, cam_pos.camy = 0.5; cam_pos.camz = 4;
+
+	if (value == 1)
+		robotState = robotStates::CHASE;
+	else if (value == 2)
+		robotState = robotStates::WALK;
+	else if (value == 3)
+		robotState = robotStates::RUN_AWAY;
+
+	glutPostRedisplay();
+}
+
 void selectFigMenu(int value) {
 	// 도형 모양 선택하기 
 	if (displayMode != displayModes::SIMPLE_DRAWING)
