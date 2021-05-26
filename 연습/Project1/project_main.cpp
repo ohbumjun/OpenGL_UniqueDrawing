@@ -322,7 +322,6 @@ void reshape(int width, int height)
 	// gluPerspective(40, ratio, 0.1, 10);
 }
 
-
 void mykey(unsigned char key, int x, int y)
 {
 	// 앞으로 칠할 색상 선택하기 
@@ -488,20 +487,26 @@ void mykey(unsigned char key, int x, int y)
 			glutPostRedisplay();
 		}
 		// 그외 : drawMode로 바꾸기 
-		else
+		/*else if(displayMode == displayModes::SIMPLE_DRAWING &&
+			drawMode != drawModes::DRAW_OBJECT)
 		{
 			cout << "mode changed to draw mode" << endl;
 			drawMode = drawModes::DRAW_OBJECT; 
-		}
+			glutPostRedisplay();
+		}*/
 		break;
 	case 'e': 
-		drawMode = drawModes::EDIT_OBJECT; 
-		cout << "mode changed to edit mode" << endl;
+		if ((displayMode == displayModes::SIMPLE_DRAWING &&
+			drawMode != drawModes::EDIT_OBJECT))
+		{
+			drawMode = drawModes::EDIT_OBJECT;
+			cout << "mode changed to edit mode" << endl;
+			glutPostRedisplay();
+		}
 		break;
 	case 'f' :
 		// 3d robot animation faster
 		if (displayMode == displayModes::THREE_D ) {
-			cout << "animation faster" << endl;
 			robot.robot_anim_speed += 2;
 			glutPostRedisplay();
 		}
@@ -518,16 +523,17 @@ void mykey(unsigned char key, int x, int y)
 		}
 		// 3d robot animation slower
 		if (displayMode == displayModes::THREE_D) {
-			cout << "animation faster" << endl;
 			robot.robot_anim_speed -= 2;
 			glutPostRedisplay();
 		}
 		// 그외 : drawMode로 바꾸기 
-		else
+		/*else if ((displayMode == displayModes::SIMPLE_DRAWING &&
+			drawMode != drawModes::RESIZE_OBJECT))
 		{
 			cout << "mode changed to resize mode" << endl;
 			drawMode = drawModes::RESIZE_OBJECT; 
-		}
+			glutPostRedisplay();
+		}*/
 		break;
 	case 'q' :
 		// 2d : clock animation on, off 기능
@@ -593,28 +599,56 @@ void mykey(unsigned char key, int x, int y)
 
 void checkResizeDir(float mouse_x, float mouse_y, vector3D fig_a, vector3D fig_b)
 {
-	float fig_width  = fig_b.x - fig_a.x;
-	float fig_height = fig_a.y - fig_b.y;
+	float fig_width  = abs(fig_b.x - fig_a.x);
+	float fig_height = abs(fig_a.y - fig_b.y);
+	float ratio = 0.1;
 	// 왼쪽 상단 
-	if (abs(fig_a.x-mouse_x) < 0.1 * fig_width && abs(fig_a.y - mouse_y) < 0.* fig_height)
+	if ((fig_a.x - fig_width * ratio < mouse_x && mouse_x < fig_a.x + fig_width * ratio) &&
+		(fig_a.y - fig_height * ratio < mouse_y && mouse_y < fig_a.y + fig_height * ratio)
+		)
 	{
 		resizeDir = resizeDirs::LEFT_TOP;
 	}
-	// 왼쪽 하당
-	if (abs(fig_a.x - mouse_x) < 0.1 * fig_width && abs(fig_b.y - mouse_y) < 0.1 * fig_height)
+	// 왼쪽 하단 
+	if ((fig_a.x - fig_width * ratio < mouse_x && mouse_x < fig_a.x + fig_width * ratio) &&
+		(fig_b.y - fig_height * ratio < mouse_y && mouse_y < fig_b.y + fig_height * ratio)
+		)
 	{
 		resizeDir = resizeDirs::LEFT_BOTTOM;
 	}
-	// 오른쪽 상단
-	if (abs(fig_b.x - mouse_x) < 0.1 * fig_width && abs(fig_a.y - mouse_y) < 0.1 * fig_height)
+	// 오른쪽 상단 
+	if ((fig_b.x - fig_width * ratio < mouse_x && mouse_x < fig_b.x + fig_width * ratio) &&
+		(fig_a.y - fig_height * ratio < mouse_y && mouse_y < fig_a.y + fig_height * ratio)
+		)
 	{
 		resizeDir = resizeDirs::RIGHT_TOP;
 	}
-	// 오른쪽 하단 
-	if (abs(fig_b.x - mouse_x) < 0.1 * fig_width && abs(fig_b.y - mouse_y) < 0.1 * fig_height)
+	// 오른쪽 하단
+	if ((fig_b.x - fig_width * ratio < mouse_x && mouse_x < fig_b.x + fig_width * ratio) &&
+		(fig_b.y - fig_height * ratio < mouse_y && mouse_y < fig_b.y + fig_height * ratio)
+		)
 	{
 		resizeDir = resizeDirs::RIGHT_BOTTOM;
 	}
+	//if (abs(fig_a.x-mouse_x) < 0.1 * fig_width && abs(fig_a.y - mouse_y) < 0.1 * fig_height)
+	//{
+	//	resizeDir = resizeDirs::LEFT_TOP;
+	//}
+	//// 왼쪽 하당
+	//if (abs(fig_a.x - mouse_x) < 0.1 * fig_width && abs(fig_b.y - mouse_y) < 0.1 * fig_height)
+	//{
+	//	resizeDir = resizeDirs::LEFT_BOTTOM;
+	//}
+	//// 오른쪽 상단
+	//if (abs(fig_b.x - mouse_x) < 0.1 * fig_width && abs(fig_a.y - mouse_y) < 0.1 * fig_height)
+	//{
+	//	resizeDir = resizeDirs::RIGHT_TOP;
+	//}
+	//// 오른쪽 하단 
+	//if (abs(fig_b.x - mouse_x) < 0.1 * fig_width && abs(fig_b.y - mouse_y) < 0.1 * fig_height)
+	//{
+	//	resizeDir = resizeDirs::RIGHT_BOTTOM;
+	//}
 }
 
 bool checkRange(float x, float y, float poly_a_x, float poly_a_y, float poly_b_x, float poly_b_y)
@@ -780,12 +814,12 @@ void selectSubMenu(int value) {
 	}
 }
 void selectDrawMenu(int value) {
-	//enum drawModes { DRAW_OBJECT = 1, EDIT_OBJECT, RESIZE_OBJECT };
+	// enum drawModes { DRAW_OBJECT = 1, EDIT_OBJECT, RESIZE_OBJECT };
 	if (displayMode != displayModes::SIMPLE_DRAWING)
 	{
 		cam_pos.camx = 0, cam_pos.camy = 0, cam_pos.camz = 2;
 		displayMode = displayModes::SIMPLE_DRAWING;
-		glutPostRedisplay();
+		
 	}
 	if (value == 1)
 		drawMode = drawModes::DRAW_OBJECT;
@@ -793,6 +827,7 @@ void selectDrawMenu(int value) {
 		drawMode = drawModes::EDIT_OBJECT;
 	else if (value == 3)
 		drawMode = drawModes::RESIZE_OBJECT;
+	glutPostRedisplay();
 }
 
 void selectRobotState(int value)
