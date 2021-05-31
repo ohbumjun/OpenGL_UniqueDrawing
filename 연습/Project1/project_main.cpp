@@ -70,7 +70,6 @@ void display();
 void my_timer(int value);
 void selectRobotState(int value);
 
-
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
