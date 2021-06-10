@@ -14,7 +14,7 @@ which version of drawing you want to select
 ___ 
 
 
-## 1_1) simple drawing app
+## 1) simple drawing app
 
 ![](./readmeImg/simpledraw1.png)
 ### a. with keyboard(1,2,3,4,5,6,7) you can also choose figure
@@ -37,7 +37,7 @@ ___
 ___ 
 
 
-## 1_2) 2d clock 
+## 2) 2d clock 
 
 ![](./readmeImg/2dclock.png)
 ![](./readmeImg/2dclock2.png)
@@ -53,7 +53,7 @@ ___
 ___ 
 
 
-## 1_3) 3d robot 
+## 3) 3d robot 
 
 ![](./readmeImg/3drobot.png)
 

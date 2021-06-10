@@ -140,7 +140,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="cg.h" />
-    <ClInclude Include="DisplayHandler.h" />
     <ClInclude Include="draw.h" />
     <ClInclude Include="drawClock.h" />
     <ClInclude Include="drawRobot.h" />
@@ -149,24 +148,11 @@
   <ItemGroup>
     <ClCompile Include="drawClock.cpp" />
     <ClCompile Include="drawRobot.cpp" />
+    <ClCompile Include="ferrisWheel.cpp" />
     <ClCompile Include="project_drawcallback.cpp" />
     <ClCompile Include="project_main.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="2dSamples.cpp" />
-    <ClCompile Include="Youtube\p_3ddisplay_staticarray.cpp" />
-    <ClCompile Include="Youtube\p_3ddisplay_staticarray2.cpp" />
-    <ClCompile Include="Youtube\p_animation.cpp" />
-    <ClCompile Include="Youtube\p_antiaerising.cpp" />
-    <ClCompile Include="Youtube\p_antiaerising2.cpp" />
-    <ClCompile Include="Youtube\p_displaylist.cpp" />
-    <ClCompile Include="Youtube\p_menucallback.cpp" />
-    <ClCompile Include="Youtube\p_modelChange_perspectiveChange.cpp" />
-    <ClCompile Include="Youtube\p_model_transformation.cpp" />
-    <ClCompile Include="Youtube\p_mouseCallback.cpp" />
-    <ClCompile Include="Youtube\p_perspective_projection_viewport_transformation.cpp" />
-    <ClCompile Include="Youtube\p_visual_가시성.cpp" />
     <ClCompile Include="triangle.cpp" />
-    <ClCompile Include="youtube_practice.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
