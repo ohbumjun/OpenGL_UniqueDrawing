@@ -33,6 +33,7 @@ void display()
 	glTranslatef(0.0, -0.4, 0.0);  //instancing --> 우선 태양으로부터 떨어지게 세팅해놓는다
 	glColor3f(0.0, 0.0, 1.0);
 	ellipse(vector3D(0,0,0),0.1,0.05);
+
 	// boat right
 	glPushMatrix();
 		glRotatef(-15, 0.0, 0.0, 1.0); // instancing  : 방향선정
@@ -57,8 +58,6 @@ void display()
 		glPopMatrix();
 	glPopMatrix();
 	glPopMatrix();
-
-	
 
 	glutSwapBuffers();
 }

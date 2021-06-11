@@ -8,7 +8,7 @@ int h = 800;
 
 struct sunInfo {
 	float sunRotate = -10.0;
-	float sunRotateDg = 0.01;
+	float sunRotateDg = 0.005;
 	float sunDayStDeg = 0.0;
 	float sunDayEdDeg = -110.0;
 	float sunMidSdDeg = -237.0;
@@ -30,12 +30,15 @@ struct backRGB {
 backRGB backgrdRGB;
 
 struct leaf {
-	float width  = 0.03;
-	float height = 0.01;
-	float translate = width * 1.2;
-	float leafDrop = 0.0;
+	float width      = 0.03;
+	float height     = 0.01;
+	float translate  = width * 1.2;
+	float leafDrop   = 0.0;
+	float leafRot    = 0.0;
+	float leafRotDeg = 0.005;
 };
 leaf leafObj;
+
 
 using namespace std;
 
@@ -43,12 +46,11 @@ void drawHouse();
 void drawPerson();
 void drawSun();
 void drawTrees();
-void drawLeaf(float tx);
+void drawLeaf();
 void drawBackground();
 
 void drawHouse()
 {
-
 	glColor4f(0.8, 0.8, 0.8,1);
 	triangle(vector3D(0.55,-0.2,0), vector3D(0.3, -0.35,0), vector3D(0.80, -0.35,0));
 	glColor4f(0.5, 0.5, 0.8, 1);
@@ -57,9 +59,6 @@ void drawHouse()
 	rect(vector3D(0.5, -0.5,0), vector3D(0.6, -0.7,0));
 }
 
-void drawPerson() {
-	
-}
 
 void drawSun() {
 	float cx = 0.0, cy = 0.0, radius = 0.6;
@@ -85,30 +84,30 @@ void drawSun() {
 		}
 		glPopMatrix();
 	}
-	
 }
 
 void drawTrees() {
 	float tx = 0;
+	
 	for (int i = 0; i < 2; i++) {
 		glPushMatrix();
-		glColor4f(0.6, 0.4, 0.3, 1);
-		rect(vector3D(-0.6 + tx, -0.1, 0), vector3D(-0.7 + tx, -0.7, 0));
-		glColor4f(0.0, 0.6, 0.0, 1);
-		circle(vector3D(-0.65 + tx, 0.05, 0), 0.2);
-		// 잎사귀
-		drawLeaf(-0.65 + tx);
+			glColor4f(0.6, 0.4, 0.3, 1);
+			rect(vector3D(-0.6 + tx, -0.1, 0), vector3D(-0.7 + tx, -0.7, 0));
+			glColor4f(0.0, 0.6, 0.0, 1);
+			circle(vector3D(-0.65 + tx, 0.05, 0), 0.2);
+			glTranslatef(-0.65 + tx, 0, 0.0);
+			drawLeaf();
 		glPopMatrix();
-		
 		tx += 0.6;
 	}
+	
 }
 
-void drawLeaf(float tx) {
+void drawLeaf() {
+	float t;
 	// boat center
-	glPushMatrix(); 
-		// glRotatef(100.0 * leafObj.leafDrop, 0.0, 0.0, 1.0); // 실제 z축 중심 회전시키기
-		glTranslatef(tx, leafObj.leafDrop, 0.0);  // instancing --> 우선 태양으로부터 떨어지게 세팅해놓는다
+		glRotatef(3* leafObj.leafRot, 0.0, 0.0, 1.0); // 실제 z축 중심 회전시키기
+		glTranslatef(0, leafObj.leafDrop, 0.0);  // instancing --> 우선 태양으로부터 떨어지게 세팅해놓는다
 		glColor3f(0.0, 1.0, 0.0);
 		ellipse(vector3D(0, 0, 0), leafObj.width, leafObj.height);
 		// boat right
@@ -124,7 +123,6 @@ void drawLeaf(float tx) {
 			glTranslatef(leafObj.translate, 0.0, 0.0);   // instancing  : 위치선정
 			ellipse(vector3D(0.0, 0, 0), leafObj.width, leafObj.height);
 		glPopMatrix();
-	glPopMatrix();
 }
 
 void drawBackground() {
@@ -141,7 +139,7 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.6, 0.6, 0.6, 1.0);
-
+	glLoadIdentity();
 	// 배경 
 	drawBackground();
 	// 집 
@@ -182,6 +180,8 @@ void idle()
 	leafObj.leafDrop -= 0.00005;
 	if (leafObj.leafDrop < -0.6) leafObj.leafDrop = 0.0;
 	// 3. 나뭇잎 회전
+	leafObj.leafRot += leafObj.leafRotDeg;
+	if (leafObj.leafRot <= -10 || leafObj.leafRot >= 10) leafObj.leafRotDeg *= -1;
 
 	glutPostRedisplay();
 }
