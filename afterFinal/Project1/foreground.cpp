@@ -1,4 +1,4 @@
-
+/*
 #include "cg.h"
 #include "draw.h"
 #include "vec.h"
@@ -199,3 +199,4 @@ int main(int argc, char** argv)
 	glutMainLoop();
 }
 
+*/
