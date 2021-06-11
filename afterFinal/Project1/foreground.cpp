@@ -8,7 +8,7 @@ int h = 800;
 
 struct sunInfo {
 	float sunRotate = -10.0;
-	float sunRotateDg = 0.05;
+	float sunRotateDg = 0.01;
 	float sunDayStDeg = 0.0;
 	float sunDayEdDeg = -110.0;
 	float sunMidSdDeg = -237.0;
@@ -28,12 +28,15 @@ struct backRGB {
 	float midR = 0.1, midG = 0.1, midB = 0.1;
 	};
 backRGB backgrdRGB;
+
 struct leaf {
 	float width  = 0.03;
 	float height = 0.01;
 	float translate = width * 1.2;
+	float leafDrop = 0.0;
 };
 leaf leafObj;
+
 using namespace std;
 
 void drawHouse();
@@ -103,10 +106,9 @@ void drawTrees() {
 
 void drawLeaf(float tx) {
 	// boat center
-	glPushMatrix(); // 여기서 push,pop을 안하면, 아래의 transformation이 위에 sun에도 모두 적용되어 버린다
-		// glRotatef(3.0 * t, 0.0, 0.0, 1.0); // 실제 z축 중심 회전시키기
-		glRotatef(3.0, 0.0, 0.0, 1.0); // 실제 z축 중심 회전시키기
-		glTranslatef(tx, -leafObj.translate, 0.0);  //instancing --> 우선 태양으로부터 떨어지게 세팅해놓는다
+	glPushMatrix(); 
+		// glRotatef(100.0 * leafObj.leafDrop, 0.0, 0.0, 1.0); // 실제 z축 중심 회전시키기
+		glTranslatef(tx, leafObj.leafDrop, 0.0);  // instancing --> 우선 태양으로부터 떨어지게 세팅해놓는다
 		glColor3f(0.0, 1.0, 0.0);
 		ellipse(vector3D(0, 0, 0), leafObj.width, leafObj.height);
 		// boat right
@@ -154,22 +156,8 @@ void display()
 
 void idle()
 {
+	// 1. 해 각도 
 	// 낮 시간 동안의 변화 
-	cout << "Sun Degree :" << sun.sunRotate << endl;
-	cout << "backgrdRGB.R :" << backgrdRGB.R << endl;
-	cout << "backgrdRGB.G :" << backgrdRGB.G << endl;
-	cout << "backgrdRGB.B :" << backgrdRGB.B << endl;
-
-	// float sunRotate = -10.0;
-	// float sunRotateDg = 0.05;
-	// float sunDayStDeg = 0.0;
-	// float sunDayEdDeg = -110.0;
-	// float sunMidSdDeg = -237.0;
-	// float sunMidEdDeg = -365.0;
-	// float sunDayDegDiff = sunDayStDeg - sunDayEdDeg;
-	// float sunMidDegDiff = sunDayEdDeg - sunMidSdDeg;
-	// float sunMorDiff = sunMidSdDeg - sunMidEdDeg;
-
 	sun.sunRotate -= sun.sunRotateDg;
 	if (sun.sunRotate <= sun.sunMidEdDeg) sun.sunRotate = sun.sunDayStDeg;
 	if (sun.sunRotate <= sun.sunDayStDeg && sun.sunRotate >= sun.sunDayEdDeg) {
@@ -189,9 +177,11 @@ void idle()
 		backgrdRGB.G += (backgrdRGB.dayStG - backgrdRGB.midG) / (sun.sunMorDiff * (1.0 / sun.sunRotateDg));
 		backgrdRGB.B += (backgrdRGB.dayStB - backgrdRGB.midB) / (90 * (1.0 / sun.sunRotateDg));
 	}
-	// float dayStR = 0.6, dayStG = 1.0, dayStB = 1.0;
-	// float dayEdR = 1.0, dayEdG = 0.8, dayEdB = 0.0;
-	// float midR = 0.1, midG = 0.1, midB = 0.1;
+	
+	// 2. 나뭇잎 떨어짐 
+	leafObj.leafDrop -= 0.00005;
+	if (leafObj.leafDrop < -0.6) leafObj.leafDrop = 0.0;
+	// 3. 나뭇잎 회전
 
 	glutPostRedisplay();
 }
