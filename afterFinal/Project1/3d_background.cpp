@@ -6,7 +6,7 @@
 #define _WINDOW_WIDTH 500
 #define _WINDOW_HEIGHT 500
 
-GLfloat camx = -4, camy = 0, camz = -20;
+GLfloat camx = -15, camy = 0, camz = -0;
 GLfloat cam2x = 0, cam2y = 0, cam2z = 0;
 GLfloat cam_upx = 0, cam_upy = 1, cam_upz = 0;
 
@@ -16,27 +16,20 @@ struct cloud {
 	float rotate = 0.01;
 };
 cloud cloudObj;
-Robot robot;
+
+// RobotNums
+const int robotNums = 3;
+int* robotCoords[robotNums];
+Robot robot[robotNums];
 
 using namespace std;
 
-//참고 : 빛을 설정해줄 때는 1) 빛 2) 물체의 색상
-// 2개를 세팅해야 하는데, 1) 빛의 색상. 이 우선순위를 가진다는 점이 중요하다 
-// 예를 들어, 들어오는 빛이 RGB에서 B만 있다고 해보자. 파란색만 있는 것이다
-// 그리고 물체의 색상은 완전히 빨간색이라고 해보자
-// 그렇다고 하더라도, 색상은 빨간색을 반사시킬 수 없다. 왜냐하면 애초부터 빛에 빨간색이 없으므로 
-
-// diffuse 값을 기준으로 분류해보자
-// 1. light_diffuse가 0,0,1
-// material_ambient가 0.3, 0.3, 0.3 이라고 해보자
-// 그러면, 실제 물체 색상의 r,g,는 전혀 영향받지 않게 되고, 물체의 rg 색상이 그대로 표현된다 
-
-int* makeRandomCoord() {
+int* makeRandomCoord(float minXZ, float maxXZ, float minY, float maxY) {
 	int* arr = new int[3];
 	random_device rd;
 	mt19937 eng(rd());
-	uniform_int_distribution<int> xz(-3.5, 3.5);
-	uniform_int_distribution<int> y(3, 5);
+	uniform_int_distribution<int> xz(minXZ, maxXZ);
+	uniform_int_distribution<int> y(minY, maxY);
 	// x,y,z
 	arr[0] = xz(eng);
 	arr[1] = y(eng);
@@ -93,40 +86,41 @@ void drawWall(GLfloat z) {
 	ellipse(vector3D(x + w * 0.5, y + w * 0.2, z - 0.001), w * 0.5, 1.2);
 }
 
-void drawRobot(float sx,float sz) {
+void drawRobot(float sx,float sy,float sz) {
 	int robotAngIdx = 0;
-	
-	glPushMatrix();
-		glTranslatef(sx,-3,sz);
-		// 머리
-		drawHead();
-		// 몸통
-		drawBody();
-		// 왼쪽 팔
+	for (int i = 0; i < robotNums; i++) {
 		glPushMatrix();
-			drawUpperLeftArm(robot.leftarm_z_angle_upper[robotAngIdx], robot.leftarm_y_angle_upper);
-			drawLowerLeftArm(robot.leftarm_angle_low[robotAngIdx]);
-			drawLeftHand();
+			glTranslatef(sx,sy,sz);
+			// 머리
+			drawHead();
+			// 몸통
+			drawBody();
+			// 왼쪽 팔
+			glPushMatrix();
+				drawUpperLeftArm(robot[i].leftarm_z_angle_upper[robotAngIdx], robot[i].leftarm_y_angle_upper);
+				drawLowerLeftArm(robot[i].leftarm_angle_low[robotAngIdx]);
+				drawLeftHand();
+			glPopMatrix();
+			// 오른쪽 팔
+			glPushMatrix();
+				drawUpperRightArm(robot[i].rightarm_z_angle_upper[robotAngIdx], robot[i].rightarm_y_angle_upper);
+				drawLowerRightArm(robot[i].rightarm_angle_low[robotAngIdx]);
+				drawRightHand();
+			glPopMatrix();
+			// 왼쪽 다리
+			glPushMatrix();
+				drawUpperLeftLeg(robot[i].leftleg_z_angle_upper, robot[i].leftleg_x_angle_upper);
+				drawLowerLeftLeg(robot[i].leftleg_angle_low);
+				// drawRightHand();
+			glPopMatrix();
+			// 오른쪽 다리
+			glPushMatrix();
+				drawUpperRightLeg(robot[i].rightleg_z_angle_upper, robot[i].rightleg_x_angle_upper);
+				drawLowerRightLeg(robot[i].rightleg_angle_low);
+				// drawRightHand();
+			glPopMatrix();
 		glPopMatrix();
-		// 오른쪽 팔
-		glPushMatrix();
-			drawUpperRightArm(robot.rightarm_z_angle_upper[robotAngIdx], robot.rightarm_y_angle_upper);
-			drawLowerRightArm(robot.rightarm_angle_low[robotAngIdx]);
-			drawRightHand();
-		glPopMatrix();
-		// 왼쪽 다리
-		glPushMatrix();
-			drawUpperLeftLeg(robot.leftleg_z_angle_upper, robot.leftleg_x_angle_upper);
-			drawLowerLeftLeg(robot.leftleg_angle_low);
-			// drawRightHand();
-		glPopMatrix();
-		// 오른쪽 다리
-		glPushMatrix();
-			drawUpperRightLeg(robot.rightleg_z_angle_upper, robot.rightleg_x_angle_upper);
-			drawLowerRightLeg(robot.rightleg_angle_low);
-			// drawRightHand();
-		glPopMatrix();
-	glPopMatrix();
+	}
 }
 
 void drawFloor(GLfloat y) {
@@ -229,7 +223,12 @@ void display() {
 		drawClouds(cloudObj.clouds[i][0], cloudObj.clouds[i][1], cloudObj.clouds[i][2]);
 	}
 	// Robot
-	drawRobot(-2,-4);
+	for (int i = 0; i < robotNums; i++) {
+		glPushMatrix();
+		glRotatef(-cloudObj.rotate * robotCoords[i][0] * 5, 0, 1, 0);
+		drawRobot(robotCoords[i][0], robotCoords[i][1], robotCoords[i][2]);
+		glPopMatrix();
+	}
 
 	glFlush();
 }
@@ -240,35 +239,38 @@ void idle()
 	cloudObj.rotate += 0.01;
 
 	// 로봇 움직임
-	int arm_limit = 45;
-	robot.rightarm_y_angle_upper += robot.dir_arm_right_upper;
-	// angle_low += dir_low;
-	if (robot.rightarm_y_angle_upper >= arm_limit)
-		robot.dir_arm_right_upper = -1;
-	else if (robot.rightarm_y_angle_upper < -arm_limit)
-		robot.dir_arm_right_upper = 1;
+	for (int i = 0; i < robotNums; i++) {
+		int arm_limit = 45;
+		robot[i].rightarm_y_angle_upper += robot[i].dir_arm_right_upper;
+		// angle_low += dir_low;
+		if (robot[i].rightarm_y_angle_upper >= arm_limit)
+			robot[i].dir_arm_right_upper = -1;
+		else if (robot[i].rightarm_y_angle_upper < -arm_limit)
+			robot[i].dir_arm_right_upper = 1;
 
-		robot.leftarm_y_angle_upper += robot.dir_arm_left_upper;
-	// angle_low += dir_low;
-	if (robot.leftarm_y_angle_upper >= arm_limit)
-		robot.dir_arm_left_upper = -1;
-	else if (robot.leftarm_y_angle_upper < -arm_limit)
-		robot.dir_arm_left_upper = 1;
-	// 다리 
-	int leg_limit = 45;
-	robot.rightleg_x_angle_upper += robot.dir_leg_right_upper;
-	// angle_low += dir_low;
-	if (robot.rightleg_x_angle_upper >= arm_limit)
-		robot.dir_leg_right_upper = -1;
-	else if (robot.rightleg_x_angle_upper < -arm_limit)
-		robot.dir_leg_right_upper = 1;
+		robot[i].leftarm_y_angle_upper += robot[i].dir_arm_left_upper;
+		// angle_low += dir_low;
+		if (robot[i].leftarm_y_angle_upper >= arm_limit)
+			robot[i].dir_arm_left_upper = -1;
+		else if (robot[i].leftarm_y_angle_upper < -arm_limit)
+			robot[i].dir_arm_left_upper = 1;
+		// 다리 
+		int leg_limit = 45;
+		robot[i].rightleg_x_angle_upper += robot[i].dir_leg_right_upper;
+		// angle_low += dir_low;
+		if (robot[i].rightleg_x_angle_upper >= arm_limit)
+			robot[i].dir_leg_right_upper = -1;
+		else if (robot[i].rightleg_x_angle_upper < -arm_limit)
+			robot[i].dir_leg_right_upper = 1;
 
-	robot.leftleg_x_angle_upper += robot.dir_leg_left_upper;
-	// angle_low += dir_low;
-	if (robot.leftleg_x_angle_upper >= arm_limit)
-		robot.dir_leg_left_upper = -1;
-	else if (robot.leftleg_x_angle_upper < -arm_limit)
-		robot.dir_leg_left_upper = 1;
+		robot[i].leftleg_x_angle_upper += robot[i].dir_leg_left_upper;
+		// angle_low += dir_low;
+		if (robot[i].leftleg_x_angle_upper >= arm_limit)
+			robot[i].dir_leg_left_upper = -1;
+		else if (robot[i].leftleg_x_angle_upper < -arm_limit)
+			robot[i].dir_leg_left_upper = 1;
+	}
+	
 	glutPostRedisplay();
 }
 
@@ -339,14 +341,19 @@ int main(int argc, char** argv)
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	glutCreateWindow("Window 1");
+
 	// 반드시 createWindow 한 다음에 초기화해줘야 한다 
 	init_light();
-	// clouds 위치 설정
-	
-	for (int i = 0; i < cloudObj.cloudNum; i++) {
-		cloudObj.clouds[i] = makeRandomCoord();
-	}
 
+	// clouds , robots 위치 설정
+	for (int i = 0; i < cloudObj.cloudNum; i++) {
+		cloudObj.clouds[i] = makeRandomCoord(-3.5,3.5,3,5);
+	}
+	for (int i = 0; i < robotNums; i++) {
+		robotCoords[i] = makeRandomCoord(-3.5, 3.5, -3, -3.1);
+	}
+	
+	
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutIdleFunc(idle);
