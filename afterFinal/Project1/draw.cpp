@@ -8,10 +8,10 @@ void rect(vector3D a, vector3D b)
 */
 {
 	glBegin(GL_POLYGON);
-	glVertex3f(a.x, a.y, 0);
-	glVertex3f(b.x, a.y, 0);
-	glVertex3f(b.x, b.y, 0);
-	glVertex3f(a.x, b.y, 0);
+		glVertex3f(a.x, a.y, a.z);
+		glVertex3f(b.x, a.y, b.z);
+		glVertex3f(b.x, b.y, b.z);
+		glVertex3f(a.x, b.y, a.z);
 	glEnd();
 }
 
@@ -42,7 +42,7 @@ void ellipse(vector3D center, float width, float height) // 원
 	{
 		x = center.x + width * cos(f);  // 반지름 대신에 width
 		y = center.y + height * sin(f); // 반지름 대신에 height
-		glVertex3f(x, y, 0);
+		glVertex3f(x, y, center.z);
 	}
 	glEnd();
 }

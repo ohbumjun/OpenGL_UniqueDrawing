@@ -160,6 +160,7 @@
     <ClInclude Include="vec.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3d_background.cpp" />
     <ClCompile Include="animation_sample.cpp" />
     <ClCompile Include="draw.cpp" />
     <ClCompile Include="ferrisWheel.cpp" />

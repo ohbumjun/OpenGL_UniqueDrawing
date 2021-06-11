@@ -1,74 +1,185 @@
-# OpenGL Personal Project
-> Simple Drawing Application using openGL.
+# OpenGL Simple Drawing App
+# a. beforeFinal
 
-![슬라이드2](https://user-images.githubusercontent.com/11494592/120094229-28c2bb00-c15a-11eb-806a-82fe523708f3.JPG)
+## 1. Description
+2d, 3d drawing application using openGL personal project 
 
-![](header.png)
+with the menu call back below, you can select
+which version of drawing you want to select 
 
-## Installation
+![](./readmeImg/menuselect1.png)
+![](./readmeImg/menuselect2.png)
 
-OS X & Linux:
+<br/>
 
-```sh
-npm install my-crazy-module --save
-```
+___ 
 
-Windows:
 
-```sh
-edit autoexec.bat
-```
+## 1) simple drawing app
 
-## Usage example
+![](./readmeImg/simpledraw1.png)
+### a. with keyboard(1,2,3,4,5,6,7) you can also choose figure
 
-A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
+<br/>
 
-_For more examples and usage, please refer to the [Wiki][wiki]._
+![](./readmeImg/simpledraw2.png)
+
+### b. with keyboard('r','b','y','g' ...) you can select color
+
+![](./readmeImg/simpledraw3.png)
+
+<br/>
+
+### c. you can choose figure, and drag the position , also top figure will be chosen 
+
+<br/>
+<br/>
+
+___ 
+
+
+## 2) 2d clock 
+
+![](./readmeImg/2dclock.png)
+![](./readmeImg/2dclock2.png)
+
+
+### a. with keyboard('i','o') you can zoomin, zoom out
+### b. with keyboard('q') you can stop the animation of clock 
+### c. with keyboard('r','g' ...) you can change the color 
+
+<br/>
+<br/>
+
+___ 
+
+
+## 3) 3d robot 
+
+![](./readmeImg/3drobot.png)
+
+### a. camera is rotating around the 3d robot 
+
+![](./readmeImg/3drobot2.png)
+
+<br/>
+
+### b. with keyboard 'r,c,...' you can change the color of robot 
+
+<br/>
+
+![](./readmeImg/3drobot3.png)
+
+### c. you can choose 3 version (run,walk,chase)
+
+![](./readmeImg/3drobot4.png)
+
+### d. with key board 'f,s' you can fasten,slow the speed of robot movement
+
+<br/>
+<br/>
+
+___ 
+
 
 ## Development setup
 
-Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
-
 ```sh
-make install
-npm test
+download the code, 
+use the visual studio
+run the application in rootDir/beforeFinal/연습
 ```
 
-## Release History
+---
+# a. beforeFinal
 
-* 0.2.1
-    * CHANGE: Update docs (module code remains unchanged)
-* 0.2.0
-    * CHANGE: Remove `setDefaultXYZ()`
-    * ADD: Add `init()`
-* 0.1.1
-    * FIX: Crash when calling `baz()` (Thanks @GenerousContributorName!)
-* 0.1.0
-    * The first proper release
-    * CHANGE: Rename `foo()` to `bar()`
-* 0.0.1
-    * Work in progress
+## 1. Description
+2d, 3d drawing application using openGL personal project 
 
-## Meta
+with the menu call back below, you can select
+which version of drawing you want to select 
 
-Your Name – [@YourTwitter](https://twitter.com/dbader_org) – YourEmail@example.com
+![](./readmeImg/menuselect1.png)
+![](./readmeImg/menuselect2.png)
 
-Distributed under the XYZ license. See ``LICENSE`` for more information.
+<br/>
 
-[https://github.com/yourname/github-link](https://github.com/dbader/)
+___ 
 
-## Contributing
+# b. afterFinal
+## 1) simple drawing app
+![](./readmeImg/simpledraw1.png)
+### a. with keyboard(1,2,3,4,5,6,7) you can also choose figure
 
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
-2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Create a new Pull Request
+<br/>
 
-<!-- Markdown link & img dfn's -->
-[npm-image]: https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/datadog-metrics
-[npm-downloads]: https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square
-[travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
-[wiki]: https://github.com/yourname/yourproject/wiki
+![](./readmeImg/simpledraw2.png)
+
+### b. with keyboard('r','b','y','g' ...) you can select color
+
+![](./readmeImg/simpledraw3.png)
+
+<br/>
+
+### c. you can choose figure, and drag the position , also top figure will be chosen 
+
+<br/>
+<br/>
+
+___ 
+
+
+## 2) 2d clock 
+
+![](./readmeImg/2dclock.png)
+![](./readmeImg/2dclock2.png)
+
+
+### a. with keyboard('i','o') you can zoomin, zoom out
+### b. with keyboard('q') you can stop the animation of clock 
+### c. with keyboard('r','g' ...) you can change the color 
+
+<br/>
+<br/>
+
+___ 
+
+
+## 3) 3d robot 
+
+![](./readmeImg/3drobot.png)
+
+### a. camera is rotating around the 3d robot 
+
+![](./readmeImg/3drobot2.png)
+
+<br/>
+
+### b. with keyboard 'r,c,...' you can change the color of robot 
+
+<br/>
+
+![](./readmeImg/3drobot3.png)
+
+### c. you can choose 3 version (run,walk,chase)
+
+![](./readmeImg/3drobot4.png)
+
+### d. with key board 'f,s' you can fasten,slow the speed of robot movement
+
+<br/>
+<br/>
+
+___ 
+
+
+## Development setup
+
+```sh
+download the code, 
+use the visual studio
+run the application in rootDir/beforeFinal/연습
+```
+
+## Development Period
+2021.05.20 ~ 2021.05.25
