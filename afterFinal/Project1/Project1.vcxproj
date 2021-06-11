@@ -156,6 +156,7 @@
     <ClInclude Include="cg.h" />
     <ClInclude Include="DisplayHandler.h" />
     <ClInclude Include="draw.h" />
+    <ClInclude Include="drawRobot.h" />
     <ClInclude Include="model.hpp" />
     <ClInclude Include="vec.h" />
   </ItemGroup>
@@ -163,6 +164,7 @@
     <ClCompile Include="3d_background.cpp" />
     <ClCompile Include="animation_sample.cpp" />
     <ClCompile Include="draw.cpp" />
+    <ClCompile Include="drawRobot.cpp" />
     <ClCompile Include="ferrisWheel.cpp" />
     <ClCompile Include="foreground.cpp" />
     <ClCompile Include="transformation.cpp" />

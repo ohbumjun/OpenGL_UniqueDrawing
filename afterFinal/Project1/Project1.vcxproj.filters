@@ -30,6 +30,9 @@
     <ClInclude Include="model.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="drawRobot.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Youtube\p_3ddisplay_staticarray.cpp">
@@ -87,6 +90,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="3d_background.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="drawRobot.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

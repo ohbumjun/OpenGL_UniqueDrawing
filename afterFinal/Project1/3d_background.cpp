@@ -1,13 +1,22 @@
 #include "cg.h"
 #include "draw.h"
+#include "drawRobot.h"
 #include <random>
 
 #define _WINDOW_WIDTH 500
 #define _WINDOW_HEIGHT 500
 
-GLfloat camx = -4, camy = 10, camz = -15;
+GLfloat camx = -4, camy = 0, camz = -20;
 GLfloat cam2x = 0, cam2y = 0, cam2z = 0;
 GLfloat cam_upx = 0, cam_upy = 1, cam_upz = 0;
+
+struct cloud {
+	int cloudNum = 20 ;
+	int* clouds[20];
+	float rotate = 0.01;
+};
+cloud cloudObj;
+Robot robot;
 
 using namespace std;
 
@@ -26,10 +35,9 @@ int* makeRandomCoord() {
 	int* arr = new int[3];
 	random_device rd;
 	mt19937 eng(rd());
-	uniform_int_distribution<int> xz(-4.5, 4.5);
-	uniform_int_distribution<int> y(2, 5);
-		
-		// x,y,z
+	uniform_int_distribution<int> xz(-3.5, 3.5);
+	uniform_int_distribution<int> y(3, 5);
+	// x,y,z
 	arr[0] = xz(eng);
 	arr[1] = y(eng);
 	arr[2] = xz(eng);
@@ -49,7 +57,6 @@ void drawWall(GLfloat z) {
 	// 반사광에 대해 반짝거리는 정도 
 	GLfloat matrial_0_shiness[] = { 2.0 }; // 0 ~ 128
 	// 발광체 설정 : 즉, 물체 자체에서 빛이 나게끔
-	// 하지만, 다른 물체로 빛이 빛춰지지는 않는다 
 	// GLfloat matrial_0_emission[] = { 0.0, 0.0, 0.5, 1.0 };
 
 	// 적용
@@ -59,10 +66,6 @@ void drawWall(GLfloat z) {
 	glMaterialfv(GL_FRONT, GL_SHININESS, matrial_0_shiness);
 	// glMaterialfv(GL_FRONT, GL_EMISSION, matrial_0_emission);
 
-	// 법선벡터를 -z축,우리쪽 방향 세팅
-	// 그래야만, 벽,바닥끼리 구분이 된다
-	// 법선벡터는 어디가 앞면이고, 어디가 뒷면인지를 알려주는 정보에 해당하기 때문이다 
-	// 그리고 각각에 대한 shading도 들어가게 된다 
 	glNormal3f(0, 0, -1);
 	glBegin(GL_POLYGON);
 		glVertex3f(x, y, z);
@@ -88,6 +91,42 @@ void drawWall(GLfloat z) {
 	glMaterialfv(GL_FRONT, GL_SHININESS, matrial_1_shiness);
 	rect(vector3D(x, y, z-0.001),vector3D(x+w,y+w*0.2,z-0.001));
 	ellipse(vector3D(x + w * 0.5, y + w * 0.2, z - 0.001), w * 0.5, 1.2);
+}
+
+void drawRobot(float sx,float sz) {
+	int robotAngIdx = 0;
+	
+	glPushMatrix();
+		glTranslatef(sx,-3,sz);
+		// 머리
+		drawHead();
+		// 몸통
+		drawBody();
+		// 왼쪽 팔
+		glPushMatrix();
+			drawUpperLeftArm(robot.leftarm_z_angle_upper[robotAngIdx], robot.leftarm_y_angle_upper);
+			drawLowerLeftArm(robot.leftarm_angle_low[robotAngIdx]);
+			drawLeftHand();
+		glPopMatrix();
+		// 오른쪽 팔
+		glPushMatrix();
+			drawUpperRightArm(robot.rightarm_z_angle_upper[robotAngIdx], robot.rightarm_y_angle_upper);
+			drawLowerRightArm(robot.rightarm_angle_low[robotAngIdx]);
+			drawRightHand();
+		glPopMatrix();
+		// 왼쪽 다리
+		glPushMatrix();
+			drawUpperLeftLeg(robot.leftleg_z_angle_upper, robot.leftleg_x_angle_upper);
+			drawLowerLeftLeg(robot.leftleg_angle_low);
+			// drawRightHand();
+		glPopMatrix();
+		// 오른쪽 다리
+		glPushMatrix();
+			drawUpperRightLeg(robot.rightleg_z_angle_upper, robot.rightleg_x_angle_upper);
+			drawLowerRightLeg(robot.rightleg_angle_low);
+			// drawRightHand();
+		glPopMatrix();
+	glPopMatrix();
 }
 
 void drawFloor(GLfloat y) {
@@ -129,7 +168,7 @@ void drawFloor(GLfloat y) {
 	glEnd();
 }
 
-void drawBall(float sx, float sy, float sz) {
+void drawClouds(float sx, float sy, float sz) {
 	// 공 그리기 ---
 	glDisable(GL_COLOR_MATERIAL);
 	// 물체의 색상
@@ -151,20 +190,20 @@ void drawBall(float sx, float sy, float sz) {
 	// glMaterialfv(GL_FRONT, GL_EMISSION, matrial_0_emission);
 
 	float x, z;
-		for (float f = 0.0; f < 2 * M_PI; f += M_PI / 12.0) // 36.0 으로 나눈다는 것은 10씩 증가시킨다 
-		{
-			glPushMatrix();
-			// 원을 나타내는 수식 : x^2  + y^2 = r^2
-			// parametric 형식 : X = r * cos (f) -> f: 각도 ( 0 ~ 360 )
-			// parametric 형식 : Y = r * sin (f) -> f: 각도 
-			x = sx + 0.6 * cos(f);
-			z = sz + 0.6 * sin(f);
-			glTranslatef(x, sy, z);
-			glutSolidSphere(0.3, 20, 20);
-			glPopMatrix();
-
-		}
-		
+	// glRotatef(cloudObj.rotate, 0, 1, 0);
+	for (float f = 0.0; f < 2 * M_PI; f += M_PI / 12.0) // 36.0 으로 나눈다는 것은 10씩 증가시킨다 
+	{
+		glPushMatrix();
+		// 원을 나타내는 수식 : x^2  + y^2 = r^2
+		// parametric 형식 : X = r * cos (f) -> f: 각도 ( 0 ~ 360 )
+		// parametric 형식 : Y = r * sin (f) -> f: 각도 
+		x = sx + 0.6 * cos(f);
+		z = sz + 0.6 * sin(f);
+		glRotatef(cloudObj.rotate * sy * 5, 0, 1, 0);
+		glTranslatef(x, sy, z);
+		glutSolidSphere(0.3, 20, 20);
+		glPopMatrix();
+	}
 	
 }
 
@@ -180,17 +219,57 @@ void display() {
 	glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_POLYGON_SMOOTH);
 
+	// Floor
 	drawFloor(-5.0);
+	// Wall
 	drawWall(5.0);
-
+	// Cloud
 	// float sx, float sz, float sy
-	int* p;
-	for (int i = 0; i < 20; i++) {
-		p = makeRandomCoord();
-		drawBall(p[0], p[1], p[2]);
+	for (int i = 0; i < cloudObj.cloudNum; i++) {
+		drawClouds(cloudObj.clouds[i][0], cloudObj.clouds[i][1], cloudObj.clouds[i][2]);
 	}
+	// Robot
+	drawRobot(-2,-4);
 
 	glFlush();
+}
+
+void idle()
+{
+	// 구름 회전 
+	cloudObj.rotate += 0.01;
+
+	// 로봇 움직임
+	int arm_limit = 45;
+	robot.rightarm_y_angle_upper += robot.dir_arm_right_upper;
+	// angle_low += dir_low;
+	if (robot.rightarm_y_angle_upper >= arm_limit)
+		robot.dir_arm_right_upper = -1;
+	else if (robot.rightarm_y_angle_upper < -arm_limit)
+		robot.dir_arm_right_upper = 1;
+
+		robot.leftarm_y_angle_upper += robot.dir_arm_left_upper;
+	// angle_low += dir_low;
+	if (robot.leftarm_y_angle_upper >= arm_limit)
+		robot.dir_arm_left_upper = -1;
+	else if (robot.leftarm_y_angle_upper < -arm_limit)
+		robot.dir_arm_left_upper = 1;
+	// 다리 
+	int leg_limit = 45;
+	robot.rightleg_x_angle_upper += robot.dir_leg_right_upper;
+	// angle_low += dir_low;
+	if (robot.rightleg_x_angle_upper >= arm_limit)
+		robot.dir_leg_right_upper = -1;
+	else if (robot.rightleg_x_angle_upper < -arm_limit)
+		robot.dir_leg_right_upper = 1;
+
+	robot.leftleg_x_angle_upper += robot.dir_leg_left_upper;
+	// angle_low += dir_low;
+	if (robot.leftleg_x_angle_upper >= arm_limit)
+		robot.dir_leg_left_upper = -1;
+	else if (robot.leftleg_x_angle_upper < -arm_limit)
+		robot.dir_leg_left_upper = 1;
+	glutPostRedisplay();
 }
 
 void reshape(int width, int height) {
@@ -262,9 +341,15 @@ int main(int argc, char** argv)
 	glutCreateWindow("Window 1");
 	// 반드시 createWindow 한 다음에 초기화해줘야 한다 
 	init_light();
+	// clouds 위치 설정
+	
+	for (int i = 0; i < cloudObj.cloudNum; i++) {
+		cloudObj.clouds[i] = makeRandomCoord();
+	}
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
+	glutIdleFunc(idle);
 
 	glutMainLoop();
 	return 0;
