@@ -6,7 +6,7 @@
 #define _WINDOW_WIDTH 500
 #define _WINDOW_HEIGHT 500
 
-GLfloat camx = -15, camy = 0, camz = -0;
+GLfloat camx = -15, camy = 5, camz = -12;
 GLfloat cam2x = 0, cam2y = 0, cam2z = 0;
 GLfloat cam_upx = 0, cam_upy = 1, cam_upz = 0;
 

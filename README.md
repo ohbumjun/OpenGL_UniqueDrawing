@@ -91,7 +91,7 @@ run the application in rootDir/beforeFinal/연습
 ```
 
 ---
-# a. beforeFinal
+# b. afterFinal
 
 ## 1. Description
 2d, 3d drawing application using openGL personal project 
@@ -139,6 +139,22 @@ ___
 ### Sun above rotates and, background color changed
 
 ### Leaf Falls down with animations 
+___ 
+
+<br/>
+
+## 4) 3d Clouds,Robots Moving Background  
+
+<br/>
+
+![](./readmeImg/3d_fore_1.png)
+![](./readmeImg/3d_fore_2.png)
+
+### Clouds Above Rotating, generated in random positions
+
+### Robots Moving Around, generated in random positions
+
+### Applying Basic Light Therory
 
 <br/>
 <br/>
